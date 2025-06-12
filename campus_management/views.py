@@ -1,9 +1,8 @@
 from rest_framework import generics
-from .serializers import GuestSerializer, CustomUserSerializer
+from .serializers import GuestSerializer, CustomUserSerializer, CXAppUserSerializer
 from .models import Guest
 from rest_framework.permissions import AllowAny 
 from rest_framework.response import Response
-
 
 class GuestViews:
 	serializer_class = GuestSerializer
@@ -25,3 +24,9 @@ class GetCurrentUser(generics.GenericAPIView):
 		user = self.serializer_class(request.user)
 		return Response(user.data)
 	
+class GetCXAppCurrentUser(generics.GenericAPIView):
+	serializer_class = CXAppUserSerializer
+
+	def get(self, request, *args, **kwargs):
+		user = self.serializer_class(request.user)
+		return Response(user.data)

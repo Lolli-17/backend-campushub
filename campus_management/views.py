@@ -3,11 +3,11 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import viewsets
 from .models import (
-	Campus, Housing, Room, ElectricityMeter, CommonArea, Guest, Package,
+	Campus, Space, Room, ElectricityMeter, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser
 )
 from .serializers import (
-	CampusSerializer, HousingSerializer, RoomSerializer, ElectricityMeterSerializer,
+	CampusSerializer, SpaceSerializer, RoomSerializer, ElectricityMeterSerializer,
 	CommonAreaSerializer, GuestSerializer, PackageSerializer, 
 	CommonAreaReservationSerializer, CleaningReservationSerializer, 
 	FaultReportSerializer, CustomUserSerializer, CXAppUserSerializer
@@ -33,15 +33,15 @@ class CampusViewSet(viewsets.ModelViewSet):
 	queryset = Campus.objects.all()
 	serializer_class = CampusSerializer
 
-# ViewSet per il modello Housing
-class HousingViewSet(viewsets.ModelViewSet):
-	queryset = Housing.objects.all()
-	serializer_class = HousingSerializer
-
 # ViewSet per il modello Room
 class RoomViewSet(viewsets.ModelViewSet):
 	queryset = Room.objects.all()
 	serializer_class = RoomSerializer
+
+# ViewSet per il modello Space
+class SpaceViewSet(viewsets.ModelViewSet):
+	queryset = Space.objects.all()
+	serializer_class = SpaceSerializer
 
 # ViewSet per il modello ElectricityMeter
 class ElectricityMeterViewSet(viewsets.ModelViewSet):
@@ -78,17 +78,29 @@ class FaultReportViewSet(viewsets.ModelViewSet):
 	queryset = FaultReport.objects.all()
 	serializer_class = FaultReportSerializer
 
-# ViewSet per il modello Worker
-# class WorkerViewSet(viewsets.ModelViewSet):
-# 	queryset = Worker.objects.all()
-# 	serializer_class = WorkerSerializer
 
-# ViewSet per il modello CustomUser
 class CustomUserViewSet(viewsets.ModelViewSet):
 	queryset = CustomUser.objects.all()
 	serializer_class = CustomUserSerializer
-	# Puoi aggiungere qui filtri, permessi, o altre logiche specifiche per l'utente
 	
+	def get_queryset(self):
+		user_type = self.request.query_params.get("type")
+		if user_type == "site":
+			return CustomUser.objects.filter(role__in=[
+				'community_ambassador',
+				'front_office',
+				'front_office_manager',
+				'marketing',
+				'resident_manager',
+			])
+		elif user_type == "app":
+			return CustomUser.objects.filter(role__in=[
+				'resident',
+				'guest',
+			])
+		return CustomUser.objects.all()
+	
+
 class GetCXAppCurrentUser(generics.GenericAPIView):
 	serializer_class = CXAppUserSerializer
 

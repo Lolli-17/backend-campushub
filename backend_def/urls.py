@@ -11,7 +11,6 @@ urlpatterns = [
     path("user/login", TokenObtainPairView.as_view(), name="token_obtain_pair"),
 	path("user/register", views.RegisterUser.as_view(), name="create_user"),
     path("user/token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
-	path('user/get-current', views.GetCurrentUser.as_view(), name='ciao'),
-	path('user/cx/get-current', views.GetCXAppCurrentUser.as_view(), name='ciao'),
+	path('user/get-current', views.GetCurrentUser.as_view(), name='current_user'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

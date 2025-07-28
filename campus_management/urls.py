@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
-    CampusViewSet, HousingViewSet, RoomViewSet, ElectricityMeterViewSet, CommonAreaViewSet,
+    CampusViewSet, SpaceViewSet, RoomViewSet, ElectricityMeterViewSet, CommonAreaViewSet,
     GuestViewSet, PackageViewSet, CommonAreaReservationViewSet, CleaningReservationViewSet,
     FaultReportViewSet, CustomUserViewSet
 )
@@ -9,7 +9,7 @@ from .views import (
 # Crea un router e registra i nostri ViewSet con esso.
 router = DefaultRouter()
 router.register(r'campuses', CampusViewSet)
-router.register(r'housings', HousingViewSet)
+router.register(r'space', SpaceViewSet)
 router.register(r'rooms', RoomViewSet)
 router.register(r'electricity-meters', ElectricityMeterViewSet, basename='electricitymeter') # Specificare basename per OneToOneField o se il nome è diverso
 router.register(r'common-areas', CommonAreaViewSet, basename='commonarea')

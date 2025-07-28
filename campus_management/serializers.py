@@ -1,10 +1,9 @@
 from rest_framework import serializers
 from .models import (
-	Campus, Housing, Room, ElectricityMeter, CommonArea, Guest, Package,
+	Campus, Space, Room, ElectricityMeter, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser
 )
 from django.contrib.auth.hashers import make_password
-
 
 # Serializzatore per il modello Campus
 class CampusSerializer(serializers.ModelSerializer):
@@ -13,17 +12,17 @@ class CampusSerializer(serializers.ModelSerializer):
 		fields = '__all__'  # Include tutti i campi del modello
 
 
-# Serializzatore per il modello Housing
-class HousingSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Housing
-		fields = '__all__'
-
-
 # Serializzatore per il modello Room
 class RoomSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Room
+		fields = '__all__'
+
+
+# Serializzatore per il modello Space
+class SpaceSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Space
 		fields = '__all__'
 
 
@@ -92,24 +91,40 @@ class CustomUserSerializer(serializers.ModelSerializer):
 		model = CustomUser
 		fields = (
 			'id', 'username', 'email', 'role', 'isFirstAccess', 'first_name', 'last_name',
-			'is_staff', 'is_active', 'date_joined', 'last_login', 'groups', 'user_permissions'
+			'is_staff', 'is_active', 'date_joined', 'last_login', 'groups', 'user_permissions', 'password'
 		)
-		# Campi extra da non includere in scrittura, o che sono di sola lettura
 		read_only_fields = ('date_joined', 'last_login',)
-		# Per la password, non vogliamo esporla direttamente e potremmo voler gestirla separatamente per l'aggiornamento
 		extra_kwargs = {'password': {'write_only': True, 'required': False}}
 
+		# user = User.objects.create(
+		# 	email=validated_data['email'],
+		# 	username=validated_data['username'],
+		# 	password = make_password(validated_data['password'])
+		# )
+		
 	def create(self, validated_data):
-		# Sovrascrive il metodo create per gestire correttamente la password
-		user = CustomUser.objects.create_user(**validated_data)
+		# rimane più ordinato per poter mantenere la password sicura
+		password = validated_data.pop('password', None)
+		if password:
+			hashed_password = make_password(password)
+		else:
+			hashed_password = None
+
+		user = CustomUser(**validated_data)
+		if hashed_password:
+			user.password = hashed_password
+		user.save()
 		return user
 
 	def update(self, instance, validated_data):
-		# Sovrascrive il metodo update per gestire correttamente la password
-		if 'password' in validated_data:
-			password = validated_data.pop('password')
-			instance.set_password(password)
-		return super().update(instance, validated_data)
+		password = validated_data.pop('password', None)
+		for attr, value in validated_data.items():
+			setattr(instance, attr, value)
+		if password:
+			instance.password = make_password(password)
+		instance.save()
+		return instance
+
 
 
 class CXAppUserSerializer(serializers.ModelSerializer):

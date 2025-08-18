@@ -4,13 +4,15 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from .models import (
 	Campus, Space, Room, ElectricityMeter, CommonArea, Guest, Package,
-	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser
+	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
+	GlobalNotifications, UserNotifications,
 )
 from .serializers import (
 	CampusSerializer, SpaceSerializer, RoomSerializer, ElectricityMeterSerializer,
 	CommonAreaSerializer, GuestSerializer, PackageSerializer, 
 	CommonAreaReservationSerializer, CleaningReservationSerializer, 
-	FaultReportSerializer, CustomUserSerializer, CXAppUserSerializer
+	FaultReportSerializer, CustomUserSerializer, CXAppUserSerializer,
+	GlobalNotificationsSerializer, UserNotificationsSerializer,
 )
 
 
@@ -28,55 +30,65 @@ class GetCurrentUser(generics.GenericAPIView):
 		return Response(user.data)
 
 
-# ViewSet per il modello Campus
+
 class CampusViewSet(viewsets.ModelViewSet):
 	queryset = Campus.objects.all()
 	serializer_class = CampusSerializer
 
-# ViewSet per il modello Room
+
 class RoomViewSet(viewsets.ModelViewSet):
 	queryset = Room.objects.all()
 	serializer_class = RoomSerializer
 
-# ViewSet per il modello Space
+
 class SpaceViewSet(viewsets.ModelViewSet):
 	queryset = Space.objects.all()
 	serializer_class = SpaceSerializer
 
-# ViewSet per il modello ElectricityMeter
+
 class ElectricityMeterViewSet(viewsets.ModelViewSet):
 	queryset = ElectricityMeter.objects.all()
 	serializer_class = ElectricityMeterSerializer
 
-# ViewSet per il modello CommonArea
+
 class CommonAreaViewSet(viewsets.ModelViewSet):
 	queryset = CommonArea.objects.all()
 	serializer_class = CommonAreaSerializer
 
-# ViewSet per il modello Guest
+
 class GuestViewSet(viewsets.ModelViewSet):
 	queryset = Guest.objects.all()
 	serializer_class = GuestSerializer
 
-# ViewSet per il modello Package
+
 class PackageViewSet(viewsets.ModelViewSet):
 	queryset = Package.objects.all()
 	serializer_class = PackageSerializer
 
-# ViewSet per il modello CommonAreaReservation
+
 class CommonAreaReservationViewSet(viewsets.ModelViewSet):
 	queryset = CommonAreaReservation.objects.all()
 	serializer_class = CommonAreaReservationSerializer
 
-# ViewSet per il modello CleaningReservation
+
 class CleaningReservationViewSet(viewsets.ModelViewSet):
 	queryset = CleaningReservation.objects.all()
 	serializer_class = CleaningReservationSerializer
 
-# ViewSet per il modello FaultReport
+
 class FaultReportViewSet(viewsets.ModelViewSet):
 	queryset = FaultReport.objects.all()
 	serializer_class = FaultReportSerializer
+
+
+class GlobalNotificationsViewSet(viewsets.ModelViewSet):
+	queryset = GlobalNotifications.objects.all()
+	serializer_class = GlobalNotificationsSerializer
+
+
+class UserNotificationsViewSet(viewsets.ModelViewSet):
+	queryset = UserNotifications.objects.all()
+	serializer_class = UserNotificationsSerializer
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):

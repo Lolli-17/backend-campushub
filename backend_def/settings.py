@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-7k2kj&xo_0uju7(nd%qra3(vil5b_br*$#((jqhr@e^q2b^+!f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://campushub.pythonanywhere.com/']
 
 
 # Application definition
@@ -84,6 +84,7 @@ ROOT_URLCONF = 'backend_def.urls'
 CORS_ALLOWED_ORIGINS = [
 	'http://localhost:3000',
 	'http://127.0.0.1:3000',
+	'https://campushub.pythonanywhere.com',
 ]
 
 CORS_ALLOW_CREDENTIALS = True

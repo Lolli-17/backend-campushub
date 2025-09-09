@@ -121,7 +121,11 @@ STORAGES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'backend_campusHub',
+		# 'NAME': 'backend_campusHub',
+        'NAME': 'CampusHub$default',
+        'USER': 'CampusHub',
+        'PASSWORD': 'Mysql12!',
+        'HOST': 'CampusHub.mysql.pythonanywhere-services.com',
     }
 }
 

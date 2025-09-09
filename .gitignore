@@ -1,3 +1,6 @@
+# CSS e JS #
+staticfiles/
+
 # Django #
 *.log
 *.pot

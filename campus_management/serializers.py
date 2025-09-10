@@ -42,16 +42,8 @@ class CommonAreaSerializer(serializers.ModelSerializer):
 class GuestSerializer(serializers.ModelSerializer):
 	room_number = serializers.CharField(source='room.number', read_only=True)
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-	# resident = serializers.SlugRelatedField(
-	# 	slug_field='get_full_name',
-	# 	queryset=CustomUser.objects.all(),
-	# 	read_only=False
-	# )
-	# room = serializers.SlugRelatedField(
-	# 	slug_field='number',
-	# 	queryset=Room.objects.all(),
-	# 	read_only=False
-	# )
+	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
+	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
 
 	class Meta:
 		model = Guest
@@ -60,8 +52,7 @@ class GuestSerializer(serializers.ModelSerializer):
 
 class PackageSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
+	recipient = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 
 	class Meta:
 		model = Package

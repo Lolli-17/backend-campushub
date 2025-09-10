@@ -124,7 +124,7 @@ DATABASES = {
 		# 'NAME': 'backend_campusHub',
         'NAME': 'CampusHub$default',
         'USER': 'CampusHub',
-        'PASSWORD': 'Mysql12!',
+        'PASSWORD': 'D4atabasE!',
         'HOST': 'CampusHub.mysql.pythonanywhere-services.com',
 		'PORT': '3306',
     }

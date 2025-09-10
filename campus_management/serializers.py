@@ -25,11 +25,12 @@ class SpaceSerializer(serializers.ModelSerializer):
 
 
 class ElectricityMeterSerializer(serializers.ModelSerializer):
+	room_number = serializers.CharField(source='room.number', read_only=True)
+	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
+	
 	class Meta:
 		model = ElectricityMeter
 		fields = '__all__'
-		# Nota: per FileField come readingPicture, Django REST Framework gestisce automaticamente gli upload.
-		# È possibile aggiungere validazioni personalizzate se necessario.
 
 
 class CommonAreaSerializer(serializers.ModelSerializer):
@@ -39,30 +40,46 @@ class CommonAreaSerializer(serializers.ModelSerializer):
 
 
 class GuestSerializer(serializers.ModelSerializer):
+	room_number = serializers.CharField(source='room.number', read_only=True)
+	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
+
 	class Meta:
 		model = Guest
 		fields = '__all__'
 
 
 class PackageSerializer(serializers.ModelSerializer):
+	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
+
 	class Meta:
 		model = Package
 		fields = '__all__'
 
 
 class CommonAreaReservationSerializer(serializers.ModelSerializer):
+	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
+	room_number = serializers.CharField(source='room.number', read_only=True)
+	common_area_name = serializers.CharField(source='commonArea.name', read_only=True)
+
 	class Meta:
 		model = CommonAreaReservation
 		fields = '__all__'
 
 
 class CleaningReservationSerializer(serializers.ModelSerializer):
+	room_number = serializers.CharField(source='room.number', read_only=True)
+	space_name = serializers.CharField(source='space.name', read_only=True)
+
 	class Meta:
 		model = CleaningReservation
 		fields = '__all__'
 
 
 class FaultReportSerializer(serializers.ModelSerializer):
+	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
+	room_number = serializers.CharField(source='room.number', read_only=True)
+	space_name = serializers.CharField(source='space.name', read_only=True)
+
 	class Meta:
 		model = FaultReport
 		fields = '__all__'

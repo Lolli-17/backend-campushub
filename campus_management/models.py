@@ -45,7 +45,7 @@ class ElectricityMeter(BaseModel):
 	room = models.OneToOneField(Room, on_delete=models.CASCADE, null=True)
 	status = models.CharField(max_length=50, choices=StatusChoices.choices, default=StatusChoices.PENDING)
 	# readingPicture = models.FileField(upload_to='./electricMetersImages/')
-	electricityConsumption = models.IntegerField()
+	electricityConsumption = models.FloatField()
 	cost = models.FloatField()
 	readingDate = models.DateField()
 

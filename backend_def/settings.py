@@ -126,6 +126,7 @@ DATABASES = {
         'USER': 'CampusHub',
         'PASSWORD': 'Mysql12!',
         'HOST': 'CampusHub.mysql.pythonanywhere-services.com',
+		'PORT': '3306',
     }
 }
 

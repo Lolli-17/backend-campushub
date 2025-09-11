@@ -1,3 +1,4 @@
+from campus_management.choices import GuestStatusChoices
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
@@ -54,10 +55,24 @@ class GuestSerializer(serializers.ModelSerializer):
 			return str(timeDifference)
 		return None
 
+	def validate(self, data):
+		room = data.get('room')
+		status = data.get('status')
+		checkInTime = data.get('checkInTime')
+
+		if room and status == GuestStatusChoices.IN_HOUSE:
+			if Guest.objects.filter(room=room, status__in=GuestStatusChoices.IN_HOUSE).exclude(pk=self.instance.pk if self.instance else None).exists():
+				raise serializers.ValidationError("Questa stanza è già occupata da un ospite in arrivo o in casa.")
+		
+		if checkInTime and checkInTime <= timezone.now():
+			data['status'] = GuestStatusChoices.IN_HOUSE
+		elif status == GuestStatusChoices.IN_HOUSE and not checkInTime:
+			data['checkInTime'] = timezone.now()
+		return data
+
 	class Meta:
 		model = Guest
 		fields = '__all__'
-		read_only_fields = ('checkInTime',)
 
 
 class PackageSerializer(serializers.ModelSerializer):

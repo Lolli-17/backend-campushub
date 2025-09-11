@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from backend_def.models import BaseModel
-from .choices import RoleChoices, StatusChoices, CleaningTypeChoices, FaultTypeChoices
+from .choices import RoleChoices, StatusChoices, CleaningTypeChoices, FaultTypeChoices, GuestStatusChoices
 from .mixin import ChoiceFieldMixin;
 
 
@@ -65,7 +65,7 @@ class Guest(BaseModel):
 	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 	room = models.OneToOneField(Room, on_delete=models.CASCADE)
 	name = models.CharField(max_length=100)
-	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
+	status = models.CharField(max_length=20, choices=GuestStatusChoices.choices, default=GuestStatusChoices.OFF_HOUSE)
 	document = models.CharField(max_length=50)
 	documentNumber = models.CharField(max_length=20)
 	# badgeNumber = models.CharField(max_length=20)

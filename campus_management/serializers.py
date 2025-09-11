@@ -42,6 +42,7 @@ class CommonAreaSerializer(serializers.ModelSerializer):
 class GuestSerializer(serializers.ModelSerializer):
 	room_number = serializers.CharField(source='room.number', read_only=True)
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
+
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
 
@@ -52,6 +53,7 @@ class GuestSerializer(serializers.ModelSerializer):
 
 class PackageSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
+
 	recipient = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 
 	class Meta:
@@ -63,10 +65,10 @@ class CommonAreaReservationSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
 	room_number = serializers.CharField(source='room.number', read_only=True)
 	common_area_name = serializers.CharField(source='commonArea.name', read_only=True)
+
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
 	commonArea = serializers.PrimaryKeyRelatedField(queryset=CommonArea.objects.all())
-
 
 	class Meta:
 		model = CommonAreaReservation
@@ -76,11 +78,11 @@ class CommonAreaReservationSerializer(serializers.ModelSerializer):
 class CleaningReservationSerializer(serializers.ModelSerializer):
 	room_number = serializers.CharField(source='room.number', read_only=True)
 	space_name = serializers.CharField(source='space.name', read_only=True)
+
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
 	# cleaningType = serializers.PrimaryKeyRelatedField(queryset=CleaningType.objects.all())
-	space = serializers.PrimaryKeyRelatedField(queryset=CommonArea.objects.all())
-
+	space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
 
 	class Meta:
 		model = CleaningReservation
@@ -91,10 +93,11 @@ class FaultReportSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
 	room_number = serializers.CharField(source='room.number', read_only=True)
 	space_name = serializers.CharField(source='space.name', read_only=True)
+
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
 	# faultType = serializers.PrimaryKeyRelatedField(queryset=FaultType.objects.all())
-	space = serializers.PrimaryKeyRelatedField(queryset=CommonArea.objects.all())
+	space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
 
 	class Meta:
 		model = FaultReport

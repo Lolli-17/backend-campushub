@@ -50,6 +50,7 @@ class GuestSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Guest
 		fields = '__all__'
+		read_only_fields = ('check_in_time',)
 
 
 class PackageSerializer(serializers.ModelSerializer):

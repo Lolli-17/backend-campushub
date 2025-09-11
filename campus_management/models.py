@@ -39,6 +39,9 @@ class Space(BaseModel):
 	name = models.CharField(max_length=20)
 	room = models.ForeignKey(Room, on_delete=models.CASCADE)
 
+	def __str__(self):
+		return self.name
+
 
 class ElectricityMeter(BaseModel):
 	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True)
@@ -53,6 +56,9 @@ class ElectricityMeter(BaseModel):
 class CommonArea(BaseModel):
 	name = models.CharField(max_length=50)
 	cost = models.FloatField()
+
+	def __str__(self):
+		return self.name
 
 
 class Guest(BaseModel):

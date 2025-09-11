@@ -1,8 +1,9 @@
 from rest_framework import generics
-from rest_framework.permissions import AllowAny 
+from rest_framework.permissions import AllowAny, DjangoModelPermission
 from rest_framework.response import Response
 from rest_framework import viewsets
 from django.utils import timezone
+from django.contrib.auth.models import Group
 from .models import (
 	Campus, Space, Room, ElectricityMeter, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
@@ -19,12 +20,12 @@ from .serializers import (
 
 class RegisterUser(generics.CreateAPIView):
 	serializer_class = CustomUserSerializer
-	permission_classes = [AllowAny]
+	permission_classes = [DjangoModelPermission]
 
 
 class GetCurrentUser(generics.GenericAPIView):
 	serializer_class = CustomUserSerializer
-	permission_classes = [AllowAny]
+	permission_classes = [DjangoModelPermission]
 	
 	def get(self, request, *args, **kwargs):
 		user = self.serializer_class(request.user)
@@ -35,31 +36,37 @@ class GetCurrentUser(generics.GenericAPIView):
 class CampusViewSet(viewsets.ModelViewSet):
 	queryset = Campus.objects.all()
 	serializer_class = CampusSerializer
+	permission_classes = [DjangoModelPermission]
 
 
 class RoomViewSet(viewsets.ModelViewSet):
 	queryset = Room.objects.all()
 	serializer_class = RoomSerializer
+	permission_classes = [DjangoModelPermission]
 
 
 class SpaceViewSet(viewsets.ModelViewSet):
 	queryset = Space.objects.all()
 	serializer_class = SpaceSerializer
+	permission_classes = [DjangoModelPermission]
 
 
 class ElectricityMeterViewSet(viewsets.ModelViewSet):
 	queryset = ElectricityMeter.objects.all()
 	serializer_class = ElectricityMeterSerializer
+	permission_classes = [DjangoModelPermission]
 
 
 class CommonAreaViewSet(viewsets.ModelViewSet):
 	queryset = CommonArea.objects.all()
 	serializer_class = CommonAreaSerializer
+	permission_classes = [DjangoModelPermission]
 
 
 class GuestViewSet(viewsets.ModelViewSet):
 	queryset = Guest.objects.all()
 	serializer_class = GuestSerializer
+	permission_classes = [DjangoModelPermission]
 
 	def update(self, request, *args, **kwargs):
 		instance = self.get_object()
@@ -73,31 +80,37 @@ class GuestViewSet(viewsets.ModelViewSet):
 class PackageViewSet(viewsets.ModelViewSet):
 	queryset = Package.objects.all()
 	serializer_class = PackageSerializer
+	permission_classes = [DjangoModelPermission]
 
 
 class CommonAreaReservationViewSet(viewsets.ModelViewSet):
 	queryset = CommonAreaReservation.objects.all()
 	serializer_class = CommonAreaReservationSerializer
+	permission_classes = [DjangoModelPermission]
 
 
 class CleaningReservationViewSet(viewsets.ModelViewSet):
 	queryset = CleaningReservation.objects.all()
 	serializer_class = CleaningReservationSerializer
+	permission_classes = [DjangoModelPermission]
 
 
 class FaultReportViewSet(viewsets.ModelViewSet):
 	queryset = FaultReport.objects.all()
 	serializer_class = FaultReportSerializer
+	permission_classes = [DjangoModelPermission]
 
 
 class GlobalNotificationsViewSet(viewsets.ModelViewSet):
 	queryset = GlobalNotifications.objects.all()
 	serializer_class = GlobalNotificationsSerializer
+	permission_classes = [DjangoModelPermission]
 
 
 class UserNotificationsViewSet(viewsets.ModelViewSet):
 	queryset = UserNotifications.objects.all()
 	serializer_class = UserNotificationsSerializer
+	permission_classes = [DjangoModelPermission]
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):
@@ -121,9 +134,21 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 			])
 		return CustomUser.objects.all()
 	
+	def perform_create(self, serializer):
+		user = serializer.save()
+		role_name = user.role
+		
+		try:
+			group = Group.objects.get(name=role_name)
+			user.groups.add(group)
+		except Group.DoesNotExist:
+			print(f"Errore: il gruppo '{role_name}' non è stato trovato.")
+		return user
+	
 
 class GetCXAppCurrentUser(generics.GenericAPIView):
 	serializer_class = CXAppUserSerializer
+	permission_classes = [DjangoModelPermission]
 
 	def get(self, request, *args, **kwargs):
 		user = self.serializer_class(request.user)

@@ -43,12 +43,12 @@ class CommonAreaSerializer(serializers.ModelSerializer):
 class GuestSerializer(serializers.ModelSerializer):
 	room_number = serializers.CharField(source='room.number', read_only=True)
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-	timeInHouse = serializers.SerializerMethodField()
+	time_in_house = serializers.SerializerMethodField()
 
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
 
-	def getTimeInHouse(self, obj):
+	def get_time_in_house(self, obj):
 		if obj.status == 'in house' and obj.checkInTime:
 			timeDifference = timezone.now() - obj.checkInTime
 			return str(timeDifference)

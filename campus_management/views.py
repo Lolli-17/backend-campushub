@@ -136,9 +136,11 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 	
 	def perform_create(self, serializer):
 		groups_data = serializer.validated_data.pop('groups', [])
+		permissions_data = serializer.validated_data.pop('user_permissions', [])
 		user = serializer.save()
-		for group in groups_data:
-			user.groups.add(group)
+		
+		user.groups.set(groups_data)
+		user.user_permissions.set(permissions_data)
 	
 
 class GetCXAppCurrentUser(generics.GenericAPIView):

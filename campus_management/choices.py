@@ -33,6 +33,6 @@ class FaultTypeChoices(TextChoices):
 	OTHER = "other", "Other"
 
 class GuestStatusChoices(TextChoices):
-	IN_ARRIVO = "in_arrivo", "In Arrivo"
-	IN_HOUSE = "in_house", "In House"
-	OFF_HOUSE = "off_house", "Off House"
+	IN_ARRIVO = "In Arrivo", "In Arrivo"
+	IN_HOUSE = "In House", "In House"
+	OFF_HOUSE = "Off House", "Off House"

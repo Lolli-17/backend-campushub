@@ -32,7 +32,6 @@ class GetCurrentUser(generics.GenericAPIView):
 		return Response(user.data)
 
 
-
 class CampusViewSet(viewsets.ModelViewSet):
 	queryset = Campus.objects.all()
 	serializer_class = CampusSerializer

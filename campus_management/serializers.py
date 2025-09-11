@@ -1,10 +1,11 @@
 from rest_framework import serializers
+from django.contrib.auth.hashers import make_password
+from django.utils import timezone
 from .models import (
 	Campus, Space, Room, ElectricityMeter, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
 	GlobalNotifications, UserNotifications,
 )
-from django.contrib.auth.hashers import make_password
 
 class CampusSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -42,9 +43,16 @@ class CommonAreaSerializer(serializers.ModelSerializer):
 class GuestSerializer(serializers.ModelSerializer):
 	room_number = serializers.CharField(source='room.number', read_only=True)
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
+	timeInHouse = serializers.SerializerMethodField()
 
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
+
+	def getTimeInHouse(self, obj):
+		if obj.status == 'in house' and obj.checkInTime:
+			timeDifference = timezone.now() - obj.checkInTime
+			return str(timeDifference)
+		return None
 
 	class Meta:
 		model = Guest

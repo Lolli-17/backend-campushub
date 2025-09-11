@@ -135,15 +135,10 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 		return CustomUser.objects.all()
 	
 	def perform_create(self, serializer):
+		groups_data = serializer.validated_data.pop('groups', [])
 		user = serializer.save()
-		role_name = user.role
-		
-		try:
-			group = Group.objects.get(name=role_name)
+		for group in groups_data:
 			user.groups.add(group)
-		except Group.DoesNotExist:
-			print(f"Errore: il gruppo '{role_name}' non è stato trovato.")
-		return user
 	
 
 class GetCXAppCurrentUser(generics.GenericAPIView):

@@ -78,7 +78,7 @@ class CleaningReservationSerializer(serializers.ModelSerializer):
 	space_name = serializers.CharField(source='space.name', read_only=True)
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
-	cleaningType = serializers.PrimaryKeyRelatedField(queryset=CleaningType.objects.all())
+	# cleaningType = serializers.PrimaryKeyRelatedField(queryset=CleaningType.objects.all())
 	space = serializers.PrimaryKeyRelatedField(queryset=CommonArea.objects.all())
 
 

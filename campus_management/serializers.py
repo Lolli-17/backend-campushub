@@ -42,6 +42,7 @@ class CommonAreaSerializer(serializers.ModelSerializer):
 class GuestSerializer(serializers.ModelSerializer):
 	room_number = serializers.CharField(source='room.number', read_only=True)
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
+	check_in_time = serializers.DateTimeField(read_only=True)
 
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())

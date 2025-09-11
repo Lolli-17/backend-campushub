@@ -2,6 +2,7 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny 
 from rest_framework.response import Response
 from rest_framework import viewsets
+from django.utils import timezone
 from .models import (
 	Campus, Space, Room, ElectricityMeter, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
@@ -59,6 +60,14 @@ class CommonAreaViewSet(viewsets.ModelViewSet):
 class GuestViewSet(viewsets.ModelViewSet):
 	queryset = Guest.objects.all()
 	serializer_class = GuestSerializer
+
+	def update(self, request, *args, **kwargs):
+		instance = self.get_object()
+		if 'status' in request.data and request.data['status'] == 'in house' and instance.status != 'in house':
+			instance.check_in_time = timezone.now()
+		elif 'status' in request.data and request.data['status'] != 'in house' and instance.status == 'in house':
+			instance.check_in_time = None
+		return super().update(request, *args, **kwargs)
 
 
 class PackageViewSet(viewsets.ModelViewSet):

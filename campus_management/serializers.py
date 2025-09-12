@@ -148,7 +148,7 @@ class GuestSerializer(serializers.ModelSerializer):
 
 class PackageSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-
+	room_number = serializers.CharField(source='room.number', read_only=True)
 	recipient = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 
 	class Meta:

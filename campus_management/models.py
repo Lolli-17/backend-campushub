@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from backend_def.models import BaseModel
 from .choices import RoleChoices, StatusChoices, CleaningTypeChoices, FaultTypeChoices, GuestStatusChoices
 from .mixin import ChoiceFieldMixin;
-
+from django.utils import timezone
 
 class Campus(BaseModel):
 	name = models.CharField(max_length=200)
@@ -55,7 +55,7 @@ class ElectricityMeter(BaseModel):
 
 class ElectricityReading(BaseModel):
 	meter = models.ForeignKey(ElectricityMeter, on_delete=models.CASCADE)
-	reading_date = models.DateField(default=models.DateField)
+	reading_date = models.DateField(default=timezone.now)
 	value = models.FloatField(null=False)
 
 	def __str__(self):

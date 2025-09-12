@@ -57,9 +57,8 @@ class ElectricityMeterSerializer(serializers.ModelSerializer):
 		super().__init__(*args, **kwargs)
 		room_id = self.context.get('room_id')
 		if room_id:
-			self.fields['space'].queryset = Space.objects.filter(room_id=room_id)
-		else:
-			self.fields['space'].queryset = Space.objects.none()
+			if 'space' in self.fields:
+				self.fields['space'].queryset = Space.objects.filter(room_id=room_id)
 
 
 class ElectricityReadingSerializer(serializers.ModelSerializer):

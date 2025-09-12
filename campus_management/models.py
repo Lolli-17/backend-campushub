@@ -46,10 +46,10 @@ class Space(BaseModel):
 
 
 class ElectricityMeter(BaseModel):
-	room = models.OneToOneField(Room, on_delete=models.CASCADE)
+	space = models.OneToOneField(Space, on_delete=models.CASCADE)
 	
 	def __str__(self):
-		return f'Contatore della stanza {self.room.number}'
+		return f'Contatore della stanza {self.space.number}'
 
 
 class ElectricityReading(BaseModel):

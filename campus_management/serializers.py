@@ -84,8 +84,8 @@ class GuestSerializer(serializers.ModelSerializer):
 	def get_time_in_house(self, obj):
 		if obj.status == GuestStatusChoices.IN_HOUSE and obj.checkInTime:
 			timeDifference = timezone.now() - obj.checkInTime
-			hours = timeDifference.totalSeconds() // 3600
-			minutes = (timeDifference.totalSeconds() // 3600) // 60
+			hours = timeDifference.total_seconds() // 3600
+			minutes = (timeDifference.total_seconds() // 3600) // 60
 			return f'{int(hours)}h {int(minutes)}m'
 		return None
 

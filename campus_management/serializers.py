@@ -17,6 +17,21 @@ class CampusSerializer(serializers.ModelSerializer):
 
 
 class RoomSerializer(serializers.ModelSerializer):
+	
+	def validate(self, data):
+		number = data.get('number')
+		campus = data.get('campus')
+		instance = self.instance
+		qs = Room.objects.filter(number=number, campus=campus)
+		
+		if instance:
+			qs = qs.exclude(id=instance.id)
+		if qs.exists():
+			raise serializers.ValidationError(
+				"Una stanza con questo numero esiste già in questo campus."
+			)
+		return data
+
 	class Meta:
 		model = Room
 		fields = '__all__'

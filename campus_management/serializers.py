@@ -90,19 +90,22 @@ class GuestSerializer(serializers.ModelSerializer):
 		return None
 
 	def validate(self, data):
-		room = data.get('room')
-		status = data.get('status')
-		checkInTime = data.get('checkInTime')
+			room = data.get('room')
+			checkInTime = data.get('checkInTime')
 
-		if room and status == GuestStatusChoices.IN_HOUSE:
-			if Guest.objects.filter(room=room, status__in=GuestStatusChoices.IN_HOUSE).exclude(pk=self.instance.pk if self.instance else None).exists():
-				raise serializers.ValidationError("Questa stanza è già occupata da un ospite in arrivo o in casa.")
-		
-		if checkInTime and checkInTime <= timezone.now():
-			data['status'] = GuestStatusChoices.IN_HOUSE
-		elif status == GuestStatusChoices.IN_HOUSE and not checkInTime:
-			data['checkInTime'] = timezone.now()
-		return data
+			if checkInTime:
+				if checkInTime <= timezone.now():
+					data['status'] = GuestStatusChoices.IN_HOUSE
+				else:
+					data['status'] = GuestStatusChoices.IN_ARRIVO
+			elif 'status' in data and data['status'] == GuestStatusChoices.IN_HOUSE and not checkInTime:
+				data['checkInTime'] = timezone.now()
+
+			if room and data.get('status') == GuestStatusChoices.IN_HOUSE:
+				if Guest.objects.filter(room=room, status=GuestStatusChoices.IN_HOUSE).exclude(pk=self.instance.pk if self.instance else None).exists():
+					raise serializers.ValidationError("Questa stanza è già occupata da un ospite in arrivo o in casa.")
+			
+			return data
 	
 	def update(self, instance, validated_data):
 		if 'resident' in validated_data:

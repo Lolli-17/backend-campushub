@@ -46,21 +46,21 @@ class Space(BaseModel):
 
 
 class ElectricityMeter(BaseModel):
-	space = models.OneToOneField(Space, on_delete=models.CASCADE)
+	room = models.OneToOneField(Room, on_delete=models.CASCADE)
 	
 	def __str__(self):
-		return f'Contatore della stanza {self.space.number}'
+		return f'Contatore della stanza {self.room.number}'
 
 
 class ElectricityReading(BaseModel):
 	meter = models.ForeignKey(ElectricityMeter, on_delete=models.CASCADE)
 	reading_date = models.DateField(default=timezone.now)
 	value = models.FloatField(null=False)
+	reading_space = models.CharField(max_length=50) 
 
 	def __str__(self):
-		return f'Lettura del {self.reading_date} per {self.meter}'
-
-
+		return f'Lettura del {self.reading_date} per {self.meter.room.number}'
+	
 
 class CommonArea(BaseModel):
 	name = models.CharField(max_length=50)

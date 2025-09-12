@@ -62,13 +62,22 @@ class ElectricityMeterSerializer(serializers.ModelSerializer):
 
 
 class ElectricityReadingSerializer(serializers.ModelSerializer):
-	meter_space_name = serializers.CharField(source='meter.space.name', read_only=True)
-	meter_room_number = serializers.CharField(source='meter.space.room.number', read_only=True)
-	
-	class Meta:
-		model = ElectricityReading
-		fields = '__all__'
+    class Meta:
+        model = ElectricityReading
+        fields = '__all__'
 
+    def validate(self, data):
+        meter = data.get('meter')
+        reading_space = data.get('reading_space')
+
+        if meter and reading_space:
+            room_spaces = meter.room.spaces_list
+            if reading_space not in room_spaces:
+                raise serializers.ValidationError(
+                    {"reading_space": "Lo spazio selezionato non esiste per questa stanza."}
+                )
+        return data
+	
 
 class CommonAreaSerializer(serializers.ModelSerializer):
 	class Meta:

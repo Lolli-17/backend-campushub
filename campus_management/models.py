@@ -77,7 +77,7 @@ class Guest(BaseModel):
 	documentNumber = models.CharField(max_length=20)
 	# badgeNumber = models.CharField(max_length=20)
 	checkInTime = models.DateTimeField(null=True, blank=True)
-	nights = models.IntegerField()
+	nights = models.IntegerField(default=0)
 
 
 class Package(BaseModel):

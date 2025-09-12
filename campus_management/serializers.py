@@ -62,7 +62,6 @@ class GuestSerializer(serializers.ModelSerializer):
 	room_number = serializers.CharField(source='room.number', read_only=True)
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
 	time_in_house = serializers.SerializerMethodField()
-	nights = serializers.SerializerMethodField(read_only=True)
 
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 	# room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
@@ -80,22 +79,14 @@ class GuestSerializer(serializers.ModelSerializer):
 			)
 		
 		validated_data['room'] = resident.room
-		check_in = validated_data.get('check_in')
-		check_out = validated_data.get('check_out')
-		if check_in and check_out:
-			validated_data['nights'] = (check_out - check_in).days
-
 		return super().create(validated_data)
 
 	def get_time_in_house(self, obj):
-		if obj.status == 'in house' and obj.checkInTime:
+		if obj.status == GuestStatusChoices.IN_HOUSE and obj.checkInTime:
 			timeDifference = timezone.now() - obj.checkInTime
-			return str(timeDifference)
-		return None
-	
-	def get_nights(self, obj):
-		if obj.check_in and obj.check_out:
-			return (obj.check_out - obj.check_in).days
+			hours = timeDifference.totalSeconds() // 3600
+			minutes = (timeDifference.totalSeconds() // 3600) // 60
+			return f'{int(hours)}h {int(minutes)}m'
 		return None
 
 	def validate(self, data):
@@ -116,6 +107,7 @@ class GuestSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Guest
 		fields = '__all__'
+		read_only_fields = ['room']
 
 
 class PackageSerializer(serializers.ModelSerializer):

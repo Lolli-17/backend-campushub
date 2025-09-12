@@ -44,13 +44,13 @@ class Space(BaseModel):
 		return self.name
 	
 
-class ElectricityMeterTemp(BaseModel):
+class ElectricityMeter(BaseModel):
 	space = models.OneToOneField(Space, on_delete=models.CASCADE)
 	name = f'contatore {space.name}'
 
 
-class ElectricityMeter(BaseModel):
-	meter = models.ForeignKey(ElectricityMeterTemp, on_delete=models.CASCADE)
+class ElectricityReading(BaseModel):
+	meter = models.ForeignKey(ElectricityMeter, on_delete=models.CASCADE)
 	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True)
 	room = models.OneToOneField(Room, on_delete=models.CASCADE, null=True)
 	status = models.CharField(max_length=50, choices=StatusChoices.choices, default=StatusChoices.PENDING)

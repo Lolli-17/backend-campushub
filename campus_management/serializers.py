@@ -5,7 +5,7 @@ from django.utils import timezone
 from .models import (
 	Campus, Space, Room, ElectricityMeter, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
-	GlobalNotifications, UserNotifications, CleaningType,
+	GlobalNotifications, UserNotifications, CleaningType, ElectricityReading,
 )
 from .choices import CleaningTypeChoices, FaultTypeChoices, RoleChoices
 
@@ -43,10 +43,16 @@ class SpaceSerializer(serializers.ModelSerializer):
 		fields = '__all__'
 
 
-class ElectricityMeterSerializer(serializers.ModelSerializer):
+class ElectricityReadingSerializer(serializers.ModelSerializer):
 	room_number = serializers.CharField(source='room.number', read_only=True)
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-	
+
+	class Meta:
+		model = ElectricityReading
+		fields = '__all__'
+
+
+class ElectricityMeterSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = ElectricityMeter
 		fields = '__all__'

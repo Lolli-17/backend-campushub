@@ -4,7 +4,7 @@ from .views import (
     CampusViewSet, SpaceViewSet, RoomViewSet, ElectricityMeterViewSet, CommonAreaViewSet,
     GuestViewSet, PackageViewSet, CommonAreaReservationViewSet, CleaningReservationViewSet,
     FaultReportViewSet, CustomUserViewSet, UserNotificationsViewSet, 
-	GlobalNotificationsViewSet, CleaningTypeViewSet,
+	GlobalNotificationsViewSet, CleaningTypeViewSet, ElectricityReadingViewSet,
 )
 
 # Crea un router e registra i nostri ViewSet con esso.
@@ -12,7 +12,8 @@ router = DefaultRouter()
 router.register(r'campuses', CampusViewSet)
 router.register(r'space', SpaceViewSet)
 router.register(r'rooms', RoomViewSet)
-router.register(r'electricity-meters', ElectricityMeterViewSet, basename='electricitymeter') # Specificare basename per OneToOneField o se il nome è diverso
+router.register(r'electricity-meters', ElectricityMeterViewSet, basename='electricitymeter')
+router.register(r'electricity-readings', ElectricityReadingViewSet, basename='electricityreading')
 router.register(r'common-areas', CommonAreaViewSet, basename='commonarea')
 router.register(r'guests', GuestViewSet)
 router.register(r'packages', PackageViewSet)

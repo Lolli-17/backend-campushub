@@ -97,7 +97,7 @@ class CleaningReservationViewSet(viewsets.ModelViewSet):
 class CleaningTypeViewSet(viewsets.ModelViewSet):
 	queryset = CleaningType.objects.all()
 	serializer_class = CleaningTypeSerializer
-	permission_classes = [DjangoModelPermissions]
+	permission_classes = [AllowAny]
 
 class FaultReportViewSet(viewsets.ModelViewSet):
 	queryset = FaultReport.objects.all()

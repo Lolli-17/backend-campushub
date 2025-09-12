@@ -7,7 +7,7 @@ from .models import (
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
 	GlobalNotifications, UserNotifications, CleaningType,
 )
-from .choices import CleaningTypeChoices, FaultTypeChoices
+from .choices import CleaningTypeChoices, FaultTypeChoices, RoleChoices
 
 
 class CampusSerializer(serializers.ModelSerializer):
@@ -155,10 +155,12 @@ class UserNotificationsSerializer(serializers.ModelSerializer):
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
+	room = RoomSerializer(read_only=True)
+
 	class Meta:
 		model = CustomUser
 		fields = (
-			'id', 'username', 'email', 'role', 'isFirstAccess', 'first_name', 'last_name',
+			'id', 'username', 'email', 'role', 'isFirstAccess', 'first_name', 'last_name', 'room'
 			'is_staff', 'is_active', 'date_joined', 'last_login', 'groups', 'user_permissions', 'password'
 		)
 		read_only_fields = ('date_joined', 'last_login',)
@@ -166,23 +168,37 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 	def create(self, validated_data):
 		password = validated_data.pop('password', None)
-		if password:
-			hashed_password = make_password(password)
-		else:
-			hashed_password = None
-
+		groups_data = validated_data.pop('groups', [])
+		user_permissions_data = validated_data.pop('user_permissions', [])
 		user = CustomUser(**validated_data)
-		if hashed_password:
-			user.password = hashed_password
+		if password:
+			user.password = make_password(password)
 		user.save()
+		user.groups.set(groups_data)
+		user.user_permissions.set(user_permissions_data)
 		return user
+	
+	def validate(self, data):
+		role = data.get('role')
+		room = data.get('room')
+
+		if role in [RoleChoices.RESIDENT, RoleChoices.GUEST] and not room:
+			raise serializers.ValidationError("Per il ruolo di residente o guest, è necessario associare una stanza.")
+		if role not in [RoleChoices.RESIDENT, RoleChoices.GUEST] and room:
+			raise serializers.ValidationError("Solo i residenti e i guest possono essere associati a una stanza.")
+
+		return data
 
 	def update(self, instance, validated_data):
 		password = validated_data.pop('password', None)
+		groups_data = validated_data.pop('groups', instance.groups.all())
+		user_permissions_data = validated_data.pop('user_permissions', instance.user_permissions.all())
 		for attr, value in validated_data.items():
 			setattr(instance, attr, value)
 		if password:
 			instance.password = make_password(password)
+		instance.groups.set(groups_data)
+		instance.user_permissions.set(user_permissions_data)
 		instance.save()
 		return instance
 

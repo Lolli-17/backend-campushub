@@ -48,6 +48,13 @@ class SpaceViewSet(viewsets.ModelViewSet):
 	queryset = Space.objects.all()
 	serializer_class = SpaceSerializer
 	permission_classes = [DjangoModelPermissions]
+	
+	def get_queryset(self):
+		queryset = super().get_queryset()
+		room_id = self.request.query_params.get('room')
+		if room_id is not None:
+			queryset = queryset.filter(room_id=room_id)
+		return queryset
 
 
 class ElectricityReadingViewSet(viewsets.ModelViewSet):

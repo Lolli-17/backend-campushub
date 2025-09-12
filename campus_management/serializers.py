@@ -38,23 +38,64 @@ class RoomSerializer(serializers.ModelSerializer):
 
 
 class SpaceSerializer(serializers.ModelSerializer):
+	room_number = serializers.CharField(source='room.number', read_only=True)
+
 	class Meta:
 		model = Space
 		fields = '__all__'
 
 
-class ElectricityReadingSerializer(serializers.ModelSerializer):
-	room_number = serializers.CharField(source='room.number', read_only=True)
+class ElectricityMeterSerializer(serializers.ModelSerializer):
+	room_number = serializers.CharField(source='space.room.number', read_only=True)
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
+	# Aggiunto un campo room per la validazione, non viene salvato nel modello
+	room = serializers.PrimaryKeyRelatedField(
+		queryset=Room.objects.all(), write_only=True, required=True
+	)
+
+	class Meta:
+		model = ElectricityMeter
+		fields = '__all__'
+		read_only_fields = ['space'] # Rimuovi space da qui se vuoi che sia selezionabile
+
+	def validate(self, data):
+		room = data.get('room')
+		space = data.get('space')
+
+		if space and space.room != room:
+			raise serializers.ValidationError(
+				"Lo spazio selezionato non appartiene alla stanza specificata."
+			)
+		
+		# Assicurati che lo spazio selezionato non abbia già un contatore associato
+		if space and ElectricityMeter.objects.filter(space=space).exists():
+			if self.instance and self.instance.space != space:
+				raise serializers.ValidationError(
+					"Questo spazio ha già un contatore associato."
+				)
+			elif not self.instance:
+				raise serializers.ValidationError(
+					"Questo spazio ha già un contatore associato."
+				)
+
+		return data
+
+	def create(self, validated_data):
+		validated_data.pop('room', None)
+		return super().create(validated_data)
+
+	def update(self, instance, validated_data):
+		validated_data.pop('room', None)
+		return super().update(instance, validated_data)
+
+
+class ElectricityReadingSerializer(serializers.ModelSerializer):
+	meter_resident_name = serializers.CharField(source='meter.resident.get_full_name', read_only=True)
+	meter_space_name = serializers.CharField(source='meter.space.name', read_only=True)
+	meter_room_number = serializers.CharField(source='meter.space.room.number', read_only=True)
 
 	class Meta:
 		model = ElectricityReading
-		fields = '__all__'
-
-
-class ElectricityMeterSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = ElectricityMeter
 		fields = '__all__'
 
 

@@ -44,20 +44,23 @@ class Space(BaseModel):
 		return self.name
 	
 
+
 class ElectricityMeter(BaseModel):
+	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 	space = models.OneToOneField(Space, on_delete=models.CASCADE)
-	name = f'contatore {space.name}'
+	
+	def __str__(self):
+		return f'Contatore di {self.resident.username}'
 
 
 class ElectricityReading(BaseModel):
 	meter = models.ForeignKey(ElectricityMeter, on_delete=models.CASCADE)
-	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=True)
-	room = models.OneToOneField(Room, on_delete=models.CASCADE, null=True)
-	status = models.CharField(max_length=50, choices=StatusChoices.choices, default=StatusChoices.PENDING)
-	# readingPicture = models.FileField(upload_to='./electricReadingImages/')
-	electricityConsumption = models.FloatField()
-	cost = models.FloatField()
-	readingDate = models.DateField()
+	reading_date = models.DateField(default=models.DateField)
+	value = models.FloatField(null=False)
+
+	def __str__(self):
+		return f'Lettura del {self.reading_date} per {self.meter}'
+
 
 
 class CommonArea(BaseModel):

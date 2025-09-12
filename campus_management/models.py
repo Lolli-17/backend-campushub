@@ -19,6 +19,7 @@ class Campus(BaseModel):
 class Room(BaseModel):
 	number = models.IntegerField()
 	campus = models.ForeignKey(Campus, on_delete=models.CASCADE)
+	spaces_list = models.JSONField(default=list) # Esempio: ['Cucina', 'Camera 1', 'Camera 2']
 
 	def __str__(self):
 		return f'Stanza numero {self.number}'

@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     CampusViewSet, SpaceViewSet, RoomViewSet, ElectricityMeterViewSet, CommonAreaViewSet,
     GuestViewSet, PackageViewSet, CommonAreaReservationViewSet, CleaningReservationViewSet,
-    FaultReportViewSet, CustomUserViewSet, UserNotificationsViewSet, GlobalNotificationsViewSet
+    FaultReportViewSet, CustomUserViewSet, UserNotificationsViewSet, 
+	GlobalNotificationsViewSet, CleaningType,
 )
 
 # Crea un router e registra i nostri ViewSet con esso.
@@ -16,6 +17,7 @@ router.register(r'common-areas', CommonAreaViewSet, basename='commonarea')
 router.register(r'guests', GuestViewSet)
 router.register(r'packages', PackageViewSet)
 router.register(r'common-area-reservations', CommonAreaReservationViewSet, basename='commonareareservation')
+router.register(r'cleaning_types', CleaningType, basename='cleaningtype')
 router.register(r'cleaning-reservations', CleaningReservationViewSet, basename='cleaningreservation')
 router.register(r'fault-reports', FaultReportViewSet, basename='faultreport')
 router.register(r'user-notifications', UserNotificationsViewSet, basename='usernotification')

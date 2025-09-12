@@ -5,8 +5,10 @@ from django.utils import timezone
 from .models import (
 	Campus, Space, Room, ElectricityMeter, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
-	GlobalNotifications, UserNotifications,
+	GlobalNotifications, UserNotifications, CleaningType,
 )
+from .choices import CleaningTypeChoices, FaultTypeChoices
+
 
 class CampusSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -127,6 +129,16 @@ class FaultReportSerializer(serializers.ModelSerializer):
 		model = FaultReport
 		fields = '__all__'
 		# Nota: per FileField come faultPhoto, Django REST Framework gestisce automaticamente gli upload.
+
+
+class CleaningTypeSerializer(serializers.Serializer):
+	class Meta:
+		model = CleaningType
+		fields = '__all__'
+
+class FaultTypeSerializer(serializers.Serializer):
+	value = serializers.CharField(source='0')
+	label = serializers.CharField(source='1')
 
 
 class GlobalNotificationsSerializer(serializers.ModelSerializer):

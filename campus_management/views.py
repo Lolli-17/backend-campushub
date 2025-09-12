@@ -7,14 +7,14 @@ from django.contrib.auth.models import Group
 from .models import (
 	Campus, Space, Room, ElectricityMeter, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
-	GlobalNotifications, UserNotifications,
+	GlobalNotifications, UserNotifications, CleaningType,
 )
 from .serializers import (
 	CampusSerializer, SpaceSerializer, RoomSerializer, ElectricityMeterSerializer,
 	CommonAreaSerializer, GuestSerializer, PackageSerializer, 
 	CommonAreaReservationSerializer, CleaningReservationSerializer, 
 	FaultReportSerializer, CustomUserSerializer, CXAppUserSerializer,
-	GlobalNotificationsSerializer, UserNotificationsSerializer,
+	GlobalNotificationsSerializer, UserNotificationsSerializer, CleaningTypeSerializer,
 )
 
 
@@ -93,6 +93,11 @@ class CleaningReservationViewSet(viewsets.ModelViewSet):
 	serializer_class = CleaningReservationSerializer
 	permission_classes = [DjangoModelPermissions]
 
+
+class CleaningTypeViewSet(viewsets.ModelViewSet):
+	queryset = CleaningType.objects.all()
+	serializer_class = CleaningTypeSerializer
+	permission_classes = [DjangoModelPermissions]
 
 class FaultReportViewSet(viewsets.ModelViewSet):
 	queryset = FaultReport.objects.all()

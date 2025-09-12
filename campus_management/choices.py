@@ -3,13 +3,13 @@ from django.db.models import TextChoices
 
 
 class RoleChoices(TextChoices):
-	RESIDENT_MANAGER = "resident_manager", "Resident Manager"
-	FRONT_OFFICE_MANAGER = "front_office_manager", "Front Office Manager"
-	FRONT_OFFICE = "front_office", "Front Office"
-	COMMUNITY_AMBASSADOR = "community_ambassador", "Community Ambassador"
-	MARKETING = "marketing", "Marketing"
-	GUEST = "guest", "Guest"
-	RESIDENT = "resident", "Resident"
+	RESIDENT_MANAGER = "Resident Manager", "Resident Manager"
+	FRONT_OFFICE_MANAGER = "Front Office Manager", "Front Office Manager"
+	FRONT_OFFICE = "Front Office", "Front Office"
+	COMMUNITY_AMBASSADOR = "Community Ambassador", "Community Ambassador"
+	MARKETING = "Marketing", "Marketing"
+	GUEST = "Guest", "Guest"
+	RESIDENT = "Resident", "Resident"
 
 
 class StatusChoices(TextChoices):

@@ -93,12 +93,16 @@ class CommonAreaReservation(BaseModel):
 	notes = models.TextField()
 
 
+class CleaningType(BaseModel):
+	name = models.CharField(max_length=50)
+	cost = models.FloatField()
+
+
 class CleaningReservation(BaseModel):
 	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 	room = models.OneToOneField(Room, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
-	cleaningType = models.CharField(max_length=50, choices=CleaningTypeChoices.choices)
-	cost = models.FloatField()
+	cleaningType = models.ForeignKey(CleaningType, on_delete=models.CASCADE)
 	requestDate = models.DateField()
 	timeSlot = models.TimeField()
 	space = models.OneToOneField(CommonArea, on_delete=models.CASCADE, null=True)

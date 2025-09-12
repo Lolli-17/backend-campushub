@@ -156,11 +156,12 @@ class UserNotificationsSerializer(serializers.ModelSerializer):
 
 class CustomUserSerializer(serializers.ModelSerializer):
 	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all(), allow_null=True, required=False)
+	room_number = serializers.SerializerMethodField(read_only=True)
 
 	class Meta:
 		model = CustomUser
 		fields = (
-			'id', 'username', 'email', 'role', 'isFirstAccess', 'first_name', 'last_name', 'room',
+			'id', 'username', 'email', 'role', 'isFirstAccess', 'first_name', 'last_name', 'room', 'room_number',
 			'is_staff', 'is_active', 'date_joined', 'last_login', 'groups', 'user_permissions', 'password'
 		)
 		read_only_fields = ('date_joined', 'last_login',)
@@ -177,6 +178,9 @@ class CustomUserSerializer(serializers.ModelSerializer):
 		user.groups.set(groups_data)
 		user.user_permissions.set(user_permissions_data)
 		return user
+	
+	def get_room_number(self, obj):
+		return obj.room.number if obj.room else None
 	
 	def validate(self, data):
 		role = data.get('role')
@@ -204,6 +208,12 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class CXAppUserSerializer(serializers.ModelSerializer):
-	class Meta: 
+	room_number = serializers.SerializerMethodField(read_only=True)
+
+	class Meta:
 		model = CustomUser
-		fields = ['username', 'first_name', 'last_name', 'email', 'isFirstAccess']
+		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance', 'role', 'isFirstAccess', 'phoneNumber', 'room', 'room_number']
+		extra_kwargs = {'room': {'write_only': True}} # Rende 'room' solo scrivibile
+
+	def get_room_number(self, obj):
+		return obj.room.number if obj.room else None

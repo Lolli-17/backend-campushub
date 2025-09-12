@@ -16,23 +16,24 @@ class Campus(BaseModel):
 		return self.name
 
 
-class CustomUser(AbstractUser, BaseModel):
-	role = models.CharField(max_length=30, choices=RoleChoices.choices, default=RoleChoices.GUEST)
-	isFirstAccess = models.BooleanField(default=True)
-	phoneNumber = models.BigIntegerField(null=True)
-	campus = models.OneToOneField(Campus, on_delete=models.DO_NOTHING, null=True)
-	balance = models.FloatField(default=0.0)
-
-	def __str__(self):
-		return self.username
-
-
 class Room(BaseModel):
 	number = models.IntegerField()
 	campus = models.ForeignKey(Campus, on_delete=models.CASCADE)
 
 	def __str__(self):
 		return f'Stanza numero {self.number}'
+
+
+class CustomUser(AbstractUser, BaseModel):
+	role = models.CharField(max_length=30, choices=RoleChoices.choices, default=RoleChoices.GUEST)
+	isFirstAccess = models.BooleanField(default=True)
+	phoneNumber = models.BigIntegerField(null=True)
+	campus = models.OneToOneField(Campus, on_delete=models.DO_NOTHING, null=True)
+	balance = models.FloatField(default=0.0)
+	room = models.OneToOneField(Room, on_delete=models.SET_NULL)
+
+	def __str__(self):
+		return self.username
 
 
 class Space(BaseModel):

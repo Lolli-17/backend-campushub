@@ -99,6 +99,7 @@ class CleaningTypeViewSet(viewsets.ModelViewSet):
 	serializer_class = CleaningTypeSerializer
 	permission_classes = [AllowAny]
 
+
 class FaultReportViewSet(viewsets.ModelViewSet):
 	queryset = FaultReport.objects.all()
 	serializer_class = FaultReportSerializer

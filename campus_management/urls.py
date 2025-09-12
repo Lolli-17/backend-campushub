@@ -29,7 +29,3 @@ router.register(r'custom-users', CustomUserViewSet, basename='customuser')
 urlpatterns = [
     path('', include(router.urls)),
 ]
-
-'''
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzUxMDQwMjcwLCJpYXQiOjE3NTA5NTM4NzAsImp0aSI6IjE0YWMzMmE3ZGI1MDQ2OTc5ZmQzYWRmNzJlOTE4OWFkIiwidXNlcl9pZCI6IjFhZGYwMWNiLWUxNTctNDc2MC05NTUzLWE5MzAwNDUyYzViOSJ9.8oa-WejYOKuCuOnJSSalE3enP2MMPMGw7fqIEDdhoKk
-'''

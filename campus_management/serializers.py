@@ -66,6 +66,23 @@ class GuestSerializer(serializers.ModelSerializer):
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
 
+	def create(self, validated_data):
+		resident = validated_data.get('resident')
+		if resident.role not in [RoleChoices.RESIDENT, RoleChoices.GUEST]:
+			raise serializers.ValidationError(
+				{"resident": "Il residente deve essere un residente o un guest per avere una stanza associata."}
+			)
+		
+		if resident.room:
+			validated_data['room'] = resident.room
+		else:
+			raise serializers.ValidationError(
+				{"resident": "Il residente non ha una stanza associata."}
+			)
+
+		return super().create(validated_data)
+
+
 	def get_time_in_house(self, obj):
 		if obj.status == 'in house' and obj.checkInTime:
 			timeDifference = timezone.now() - obj.checkInTime

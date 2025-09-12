@@ -30,7 +30,7 @@ class CustomUser(AbstractUser, BaseModel):
 	phoneNumber = models.BigIntegerField(null=True)
 	campus = models.OneToOneField(Campus, on_delete=models.DO_NOTHING, null=True)
 	balance = models.FloatField(default=0.0)
-	room = models.OneToOneField(Room, on_delete=models.DO_NOTHING, null=True)
+	room = models.ForeignKey(Room, on_delete=models.DO_NOTHING, null=True)
 
 	def __str__(self):
 		return self.username

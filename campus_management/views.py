@@ -68,6 +68,13 @@ class ElectricityMeterViewSet(viewsets.ModelViewSet):
 	serializer_class = ElectricityMeterSerializer
 	permission_classes = [DjangoModelPermissions]
 
+	def get_serializer_context(self):
+		context = super().get_serializer_context()
+		room_id = self.request.query_params.get('room')
+		context['room_id'] = room_id
+		return context
+
+
 
 class CommonAreaViewSet(viewsets.ModelViewSet):
 	queryset = CommonArea.objects.all()

@@ -62,31 +62,40 @@ class GuestSerializer(serializers.ModelSerializer):
 	room_number = serializers.CharField(source='room.number', read_only=True)
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
 	time_in_house = serializers.SerializerMethodField()
+	nights = serializers.SerializerMethodField(read_only=True)
 
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
+	# room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
 
 	def create(self, validated_data):
 		resident = validated_data.get('resident')
+		
 		if resident.role not in [RoleChoices.RESIDENT, RoleChoices.GUEST]:
 			raise serializers.ValidationError(
 				{"resident": "Il residente deve essere un residente o un guest per avere una stanza associata."}
 			)
-		
-		if resident.room:
-			validated_data['room'] = resident.room
-		else:
+		if not resident.room:
 			raise serializers.ValidationError(
 				{"resident": "Il residente non ha una stanza associata."}
 			)
+		
+		validated_data['room'] = resident.room
+		check_in = validated_data.get('check_in')
+		check_out = validated_data.get('check_out')
+		if check_in and check_out:
+			validated_data['nights'] = (check_out - check_in).days
 
 		return super().create(validated_data)
-
 
 	def get_time_in_house(self, obj):
 		if obj.status == 'in house' and obj.checkInTime:
 			timeDifference = timezone.now() - obj.checkInTime
 			return str(timeDifference)
+		return None
+	
+	def get_nights(self, obj):
+		if obj.check_in and obj.check_out:
+			return (obj.check_out - obj.check_in).days
 		return None
 
 	def validate(self, data):

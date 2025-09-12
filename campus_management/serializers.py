@@ -103,6 +103,21 @@ class GuestSerializer(serializers.ModelSerializer):
 		elif status == GuestStatusChoices.IN_HOUSE and not checkInTime:
 			data['checkInTime'] = timezone.now()
 		return data
+	
+	def update(self, instance, validated_data):
+		if 'resident' in validated_data:
+			resident = validated_data['resident']
+			if resident.role not in [RoleChoices.RESIDENT, RoleChoices.GUEST]:
+				raise serializers.ValidationError(
+					{"resident": "Il residente deve essere un residente o un guest per avere una stanza associata."}
+				)
+			if not resident.room:
+				raise serializers.ValidationError(
+					{"resident": "Il residente non ha una stanza associata."}
+				)
+			instance.room = resident.room
+
+		return super().update(instance, validated_data)
 
 	class Meta:
 		model = Guest

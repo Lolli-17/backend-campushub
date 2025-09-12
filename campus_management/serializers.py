@@ -136,6 +136,7 @@ class CleaningTypeSerializer(serializers.Serializer):
 		model = CleaningType
 		fields = '__all__'
 
+
 class FaultTypeSerializer(serializers.Serializer):
 	value = serializers.CharField(source='0')
 	label = serializers.CharField(source='1')
@@ -157,7 +158,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = CustomUser
 		fields = (
-			'id', 'username', 'email', 'role', 'isFirstAccess', 'first_name', 'last_name',
+			'id', 'username', 'email', 'role', 'isFirstAccess', 'first_name', 'last_name', 'room',
 			'is_staff', 'is_active', 'date_joined', 'last_login', 'groups', 'user_permissions', 'password'
 		)
 		read_only_fields = ('date_joined', 'last_login',)

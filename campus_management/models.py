@@ -58,7 +58,6 @@ class Guest(BaseModel):
     resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     apartment = models.ForeignKey('Apartment', on_delete=models.CASCADE, null=True)
     checkInTime = models.DateTimeField(null=True, blank=True)
-    checkOutTime = models.DateTimeField(null=True, blank=True)
     nights = models.IntegerField(default=0)
     status = models.CharField(max_length=20, choices=GuestStatusChoices.choices, default=GuestStatusChoices.IN_ARRIVO)
     notes = models.TextField(null=True)

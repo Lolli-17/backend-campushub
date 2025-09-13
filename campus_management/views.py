@@ -3,7 +3,6 @@ from rest_framework.permissions import AllowAny, DjangoModelPermissions
 from rest_framework.response import Response
 from rest_framework import viewsets
 from django.utils import timezone
-from datetime import timedelta
 from django.contrib.auth.models import Group
 from .models import (
 	Campus, Apartment, CommonArea, Guest, Package,
@@ -17,7 +16,6 @@ from .serializers import (
 	FaultReportSerializer, CustomUserSerializer, CXAppUserSerializer,
 	GlobalNotificationsSerializer, UserNotificationsSerializer,
 )
-from .choices import GuestStatusChoices
 
 
 class RegisterUser(generics.CreateAPIView):
@@ -59,33 +57,17 @@ class CommonAreaViewSet(viewsets.ModelViewSet):
 
 
 class GuestViewSet(viewsets.ModelViewSet):
-    queryset = Guest.objects.all()
-    serializer_class = GuestSerializer
+	queryset = Guest.objects.all()
+	serializer_class = GuestSerializer
+	permission_classes = [DjangoModelPermissions]
 
-    def list(self, request, *args, **kwargs):
-        guests_to_update = []
-        now = timezone.now()
-        
-        for guest in self.get_queryset():
-            # 1. Aggiornamento dello stato da 'In Arrivo' a 'In House'
-            if guest.status == GuestStatusChoices.IN_ARRIVO and guest.checkInTime and guest.checkInTime <= now:
-                guest.status = GuestStatusChoices.IN_HOUSE
-                guests_to_update.append(guest)
-            
-            # 2. Aggiornamento del conteggio delle notti
-            if guest.status == GuestStatusChoices.IN_HOUSE and guest.checkInTime:
-                # Calcola la differenza in giorni tra la data di check-in e la data corrente
-                days_since_checkin = (now.date() - guest.checkInTime.date()).days
-                
-                if days_since_checkin > guest.nights:
-                    guest.nights = days_since_checkin
-                    guests_to_update.append(guest)
-        
-        # Aggiorna gli oggetti modificati in un'unica operazione
-        if guests_to_update:
-            Guest.objects.bulk_update(guests_to_update, ['status', 'nights'])
-
-        return super().list(request, *args, **kwargs)
+	def update(self, request, *args, **kwargs):
+		instance = self.get_object()
+		if 'status' in request.data and request.data['status'] == 'in house' and instance.status != 'in house':
+			instance.check_in_time = timezone.now()
+		elif 'status' in request.data and request.data['status'] != 'in house' and instance.status == 'in house':
+			instance.check_in_time = None
+		return super().update(request, *args, **kwargs)
 
 
 class PackageViewSet(viewsets.ModelViewSet):

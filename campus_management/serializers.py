@@ -135,53 +135,53 @@ class GuestSerializer(serializers.ModelSerializer):
 
 class PackageSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-	room_number = serializers.CharField(source='room.number', read_only=True)
+	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
 	recipient = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 
 	class Meta:
 		model = Package
 		fields = '__all__'
-		read_only_fields = ['room']
+		read_only_fields = ['apartment']
 
 
 class CommonAreaReservationSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-	room_number = serializers.CharField(source='room.number', read_only=True)
+	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
 	common_area_name = serializers.CharField(source='commonArea.name', read_only=True)
 
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	room = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
+	apartment = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
 	commonArea = serializers.PrimaryKeyRelatedField(queryset=CommonArea.objects.all())
 
 	class Meta:
 		model = CommonAreaReservation
 		fields = '__all__'
-		read_only_fields = ['room']
+		read_only_fields = ['apartment']
 
 
 class CleaningReservationSerializer(serializers.ModelSerializer):
-	room_number = serializers.CharField(source='room.number', read_only=True)
+	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
 
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	room = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
+	apartment = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
 
 	class Meta:
 		model = CleaningReservation
 		fields = '__all__'
-		read_only_fields = ['room']
+		read_only_fields = ['apartment']
 
 
 class FaultReportSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-	room_number = serializers.CharField(source='room.number', read_only=True)
+	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
 	
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	room = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
+	apartment = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
 
 	class Meta:
 		model = FaultReport
 		fields = '__all__'
-		read_only_fields = ['room']
+		read_only_fields = ['apartment']
 		
 
 class FaultTypeSerializer(serializers.Serializer):
@@ -202,13 +202,13 @@ class UserNotificationsSerializer(serializers.ModelSerializer):
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
-	room = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all(), allow_null=True, required=False)
-	room_number = serializers.SerializerMethodField(read_only=True)
+	apartment = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all(), allow_null=True, required=False)
+	apartment_number = serializers.SerializerMethodField(read_only=True)
 
 	class Meta:
 		model = CustomUser
 		fields = (
-			'id', 'username', 'email', 'role', 'isFirstAccess', 'first_name', 'last_name', 'room', 'room_number',
+			'id', 'username', 'email', 'role', 'isFirstAccess', 'first_name', 'last_name', 'apartment', 'apartment_number',
 			'is_staff', 'is_active', 'date_joined', 'last_login', 'groups', 'user_permissions', 'password'
 		)
 		read_only_fields = ('date_joined', 'last_login',)
@@ -255,11 +255,11 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class CXAppUserSerializer(serializers.ModelSerializer):
-	room_number = serializers.SerializerMethodField(read_only=True)
+	apartment_number = serializers.SerializerMethodField(read_only=True)
 
 	class Meta:
 		model = CustomUser
-		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance', 'role', 'isFirstAccess', 'phoneNumber', 'apartment', 'room_number']
+		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance', 'role', 'isFirstAccess', 'phoneNumber', 'apartment', 'apartment_number']
 		extra_kwargs = {'apartment': {'write_only': True}}
 
 	def get_apartment_number(self, obj):

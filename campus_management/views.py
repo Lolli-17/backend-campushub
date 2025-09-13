@@ -5,16 +5,16 @@ from rest_framework import viewsets
 from django.utils import timezone
 from django.contrib.auth.models import Group
 from .models import (
-	Campus, Apartment, ElectricityMeter, CommonArea, Guest, Package,
+	Campus, Apartment, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
-	GlobalNotifications, UserNotifications, CleaningType, ElectricityReading,
+	GlobalNotifications, UserNotifications, ElectricityReading,
 )
 from .serializers import (
-	CampusSerializer, ApartmentSerializer, ElectricityMeterSerializer,
+	CampusSerializer, ApartmentSerializer,
 	CommonAreaSerializer, GuestSerializer, PackageSerializer, ElectricityReadingSerializer,
 	CommonAreaReservationSerializer, CleaningReservationSerializer, 
 	FaultReportSerializer, CustomUserSerializer, CXAppUserSerializer,
-	GlobalNotificationsSerializer, UserNotificationsSerializer, CleaningTypeSerializer,
+	GlobalNotificationsSerializer, UserNotificationsSerializer,
 )
 
 
@@ -47,12 +47,6 @@ class ApartmentViewSet(viewsets.ModelViewSet):
 class ElectricityReadingViewSet(viewsets.ModelViewSet):
 	queryset = ElectricityReading.objects.all()
 	serializer_class = ElectricityReadingSerializer
-	permission_classes = [DjangoModelPermissions]
-
-
-class ElectricityMeterViewSet(viewsets.ModelViewSet):
-	queryset = ElectricityMeter.objects.all()
-	serializer_class = ElectricityMeterSerializer
 	permission_classes = [DjangoModelPermissions]
 
 
@@ -92,12 +86,6 @@ class CleaningReservationViewSet(viewsets.ModelViewSet):
 	queryset = CleaningReservation.objects.all()
 	serializer_class = CleaningReservationSerializer
 	permission_classes = [DjangoModelPermissions]
-
-
-class CleaningTypeViewSet(viewsets.ModelViewSet):
-	queryset = CleaningType.objects.all()
-	serializer_class = CleaningTypeSerializer
-	permission_classes = [AllowAny]
 
 
 class FaultReportViewSet(viewsets.ModelViewSet):

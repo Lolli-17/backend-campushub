@@ -19,7 +19,6 @@ class Campus(BaseModel):
 class Apartment(BaseModel):
 	number = models.IntegerField()
 	campus = models.ForeignKey(Campus, on_delete=models.CASCADE)
-	rooms = models.CharField(max_length=20, choices=RoomChoices.choices)
 
 	def __str__(self):
 		return f'Stanza numero {self.number}'
@@ -37,18 +36,11 @@ class CustomUser(AbstractUser, BaseModel):
 		return self.username
 
 
-class ElectricityMeter(BaseModel):
-	room = models.OneToOneField(Apartment, on_delete=models.CASCADE)
-	
-	def __str__(self):
-		return f'Contatore della stanza {self.room.number}'
-
-
 class ElectricityReading(BaseModel):
-	meter = models.ForeignKey(ElectricityMeter, on_delete=models.CASCADE)
+	resident = models.ForeignKey(CustomUser, null=False)
+	reading_space = models.CharField(max_length=50, choices=RoomChoices.choices)
 	reading_date = models.DateField(default=timezone.now)
 	value = models.FloatField(null=False)
-	reading_space = models.CharField(max_length=50) 
 
 	def __str__(self):
 		return f'Lettura del {self.reading_date} per {self.meter.room.number}'
@@ -94,16 +86,11 @@ class CommonAreaReservation(BaseModel):
 	notes = models.TextField()
 
 
-class CleaningType(BaseModel):
-	name = models.CharField(max_length=50)
-	cost = models.FloatField()
-
-
 class CleaningReservation(BaseModel):
 	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
 	room = models.OneToOneField(Apartment, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
-	cleaningType = models.ForeignKey(CleaningType, on_delete=models.CASCADE)
+	cleaningType = models.CharField(max_length=50, choices=CleaningTypeChoices.choices)
 	requestDate = models.DateField()
 	timeSlot = models.TimeField()
 	space = models.OneToOneField(CommonArea, on_delete=models.CASCADE, null=True)

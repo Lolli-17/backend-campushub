@@ -3,11 +3,11 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from .models import (
-	Campus, Apartment, ElectricityMeter, CommonArea, Guest, Package,
+	Campus, Apartment, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
-	GlobalNotifications, UserNotifications, CleaningType, ElectricityReading,
+	GlobalNotifications, UserNotifications, ElectricityReading,
 )
-from .choices import CleaningTypeChoices, FaultTypeChoices, RoleChoices
+from .choices import CleaningTypeChoices, FaultTypeChoices, RoleChoices, RoomChoices
 
 
 class CampusSerializer(serializers.ModelSerializer):
@@ -37,18 +37,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
 		fields = '__all__'
 
 
-class ElectricityMeterSerializer(serializers.ModelSerializer):
-	room_number = serializers.CharField(source='space.room.number', read_only=True)
-	
-	class Meta:
-		model = ElectricityMeter
-		fields = '__all__'
-
-
 class ElectricityReadingSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = ElectricityReading
-		fields = '__all__'
 
 	def validate(self, data):
 		meter = data.get('meter')
@@ -62,6 +51,10 @@ class ElectricityReadingSerializer(serializers.ModelSerializer):
 					{"reading_space": f"Lo spazio '{reading_space}' non è una scelta valida. Le opzioni sono: {valid_spaces}"}
 				)
 		return data
+	
+	class Meta:
+		model = ElectricityReading
+		fields = '__all__'
 	
 
 class CommonAreaSerializer(serializers.ModelSerializer):
@@ -169,7 +162,6 @@ class CleaningReservationSerializer(serializers.ModelSerializer):
 
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 	room = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
-	# cleaningType = serializers.PrimaryKeyRelatedField(queryset=CleaningType.objects.all())
 
 	class Meta:
 		model = CleaningReservation
@@ -187,12 +179,6 @@ class FaultReportSerializer(serializers.ModelSerializer):
 		model = FaultReport
 		fields = '__all__'
 		# Nota: per FileField come faultPhoto, Django REST Framework gestisce automaticamente gli upload.
-
-
-class CleaningTypeSerializer(serializers.Serializer):
-	class Meta:
-		model = CleaningType
-		fields = '__all__'
 
 
 class FaultTypeSerializer(serializers.Serializer):

@@ -62,6 +62,8 @@ class Guest(BaseModel):
 	nights = models.IntegerField(default=0)
 	status = models.CharField(max_length=20, choices=GuestStatusChoices.choices, default=GuestStatusChoices.IN_ARRIVO)
 	notes = models.TextField(null=True)
+	document = models.CharField(max_length=50)
+	documentNumber = models.CharField(max_length=20)
 	guest_name = models.CharField(max_length=255)
 	
 

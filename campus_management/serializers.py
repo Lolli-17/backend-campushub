@@ -173,12 +173,10 @@ class CommonAreaReservationSerializer(serializers.ModelSerializer):
 
 class CleaningReservationSerializer(serializers.ModelSerializer):
 	room_number = serializers.CharField(source='room.number', read_only=True)
-	space_name = serializers.CharField(source='space.name', read_only=True)
 
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 	room = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
 	# cleaningType = serializers.PrimaryKeyRelatedField(queryset=CleaningType.objects.all())
-	space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
 
 	class Meta:
 		model = CleaningReservation

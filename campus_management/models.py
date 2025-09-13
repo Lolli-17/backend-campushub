@@ -31,6 +31,7 @@ class CustomUser(AbstractUser, BaseModel):
 	campus = models.OneToOneField(Campus, on_delete=models.DO_NOTHING, null=True)
 	balance = models.FloatField(default=0.0)
 	apartment = models.ForeignKey(Apartment, on_delete=models.DO_NOTHING, null=True)
+	phoneNumber = models.CharField(max_length=20, null=True)
 
 	def __str__(self):
 		return self.username
@@ -65,45 +66,45 @@ class Guest(BaseModel):
 	
 
 class Package(BaseModel):
-	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-	apartment = models.OneToOneField(Apartment, on_delete=models.CASCADE)
+	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+	apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
 	sender = models.CharField(max_length=50)
 	arrivalDate = models.DateField()
 	storage = models.CharField(max_length=20)
-	notes = models.TextField()
+	notes = models.TextField(blank=True)
 
 
 class CommonAreaReservation(BaseModel):
-	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-	apartment = models.OneToOneField(Apartment, on_delete=models.CASCADE)
+	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+	apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
 	commonArea = models.ForeignKey(CommonArea, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
 	reservationDate = models.DateField()
 	timeSlot = models.TimeField()
-	notes = models.TextField()
+	notes = models.TextField(blank=True)
 
 
 class CleaningReservation(BaseModel):
-	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-	apartment = models.OneToOneField(Apartment, on_delete=models.CASCADE)
+	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+	apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
 	cleaningType = models.CharField(max_length=50, choices=CleaningTypeChoices.choices)
 	requestDate = models.DateField()
 	timeSlot = models.TimeField()
 	space = models.OneToOneField(CommonArea, on_delete=models.CASCADE, null=True)
-	notes = models.TextField()
+	notes = models.TextField(blank=True)
 
 
 class FaultReport(BaseModel):
-	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-	apartment = models.OneToOneField(Apartment, on_delete=models.CASCADE)
+	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+	apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
 	reportDate = models.DateField()
-	space = models.OneToOneField(CommonArea, on_delete=models.CASCADE, null=True)
+	space = models.ForeignKey(CommonArea, on_delete=models.CASCADE, null=True)
 	faultType = models.CharField(max_length=50, choices=FaultTypeChoices.choices)
 	# faultPhoto = models.FileField(upload_to="./faultsImages/")
-	notes = models.TextField()
+	notes = models.TextField(blank=True)
 
 
 class GlobalNotifications(BaseModel):

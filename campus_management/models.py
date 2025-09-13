@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from backend_def.models import BaseModel
-from .choices import RoleChoices, StatusChoices, CleaningTypeChoices, FaultTypeChoices, GuestStatusChoices
+from .choices import RoleChoices, StatusChoices, CleaningTypeChoices, FaultTypeChoices, GuestStatusChoices, RoomChoices
 from .mixin import ChoiceFieldMixin;
 from django.utils import timezone
 
@@ -16,10 +16,10 @@ class Campus(BaseModel):
 		return self.name
 
 
-class Room(BaseModel):
+class Apartment(BaseModel):
 	number = models.IntegerField()
 	campus = models.ForeignKey(Campus, on_delete=models.CASCADE)
-	spaces_list = models.JSONField(default=list) # Esempio: ['Cucina', 'Camera 1', 'Camera 2']
+	rooms = models.CharField(max_length=20, choices=RoomChoices.choices)
 
 	def __str__(self):
 		return f'Stanza numero {self.number}'
@@ -31,23 +31,14 @@ class CustomUser(AbstractUser, BaseModel):
 	phoneNumber = models.BigIntegerField(null=True)
 	campus = models.OneToOneField(Campus, on_delete=models.DO_NOTHING, null=True)
 	balance = models.FloatField(default=0.0)
-	room = models.ForeignKey(Room, on_delete=models.DO_NOTHING, null=True)
+	room = models.ForeignKey(Apartment, on_delete=models.DO_NOTHING, null=True)
 
 	def __str__(self):
 		return self.username
 
 
-class Space(BaseModel):
-	name = models.CharField(max_length=20)
-	room = models.ForeignKey(Room, on_delete=models.CASCADE)
-
-	def __str__(self):
-		return self.name
-	
-
-
 class ElectricityMeter(BaseModel):
-	room = models.OneToOneField(Room, on_delete=models.CASCADE)
+	room = models.OneToOneField(Apartment, on_delete=models.CASCADE)
 	
 	def __str__(self):
 		return f'Contatore della stanza {self.room.number}'
@@ -73,7 +64,7 @@ class CommonArea(BaseModel):
 
 class Guest(BaseModel):
 	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-	room = models.ForeignKey(Room, on_delete=models.CASCADE)
+	room = models.ForeignKey(Apartment, on_delete=models.CASCADE)
 	name = models.CharField(max_length=100)
 	status = models.CharField(max_length=20, choices=GuestStatusChoices.choices, default=GuestStatusChoices.OFF_HOUSE)
 	document = models.CharField(max_length=50)
@@ -85,7 +76,7 @@ class Guest(BaseModel):
 
 class Package(BaseModel):
 	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-	room = models.OneToOneField(Room, on_delete=models.CASCADE)
+	room = models.OneToOneField(Apartment, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
 	sender = models.CharField(max_length=50)
 	arrivalDate = models.DateField()
@@ -95,7 +86,7 @@ class Package(BaseModel):
 
 class CommonAreaReservation(BaseModel):
 	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-	room = models.OneToOneField(Room, on_delete=models.CASCADE)
+	room = models.OneToOneField(Apartment, on_delete=models.CASCADE)
 	commonArea = models.ForeignKey(CommonArea, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
 	reservationDate = models.DateField()
@@ -110,7 +101,7 @@ class CleaningType(BaseModel):
 
 class CleaningReservation(BaseModel):
 	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-	room = models.OneToOneField(Room, on_delete=models.CASCADE)
+	room = models.OneToOneField(Apartment, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
 	cleaningType = models.ForeignKey(CleaningType, on_delete=models.CASCADE)
 	requestDate = models.DateField()
@@ -121,7 +112,7 @@ class CleaningReservation(BaseModel):
 
 class FaultReport(BaseModel):
 	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-	room = models.OneToOneField(Room, on_delete=models.CASCADE)
+	room = models.OneToOneField(Apartment, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
 	reportDate = models.DateField()
 	space = models.OneToOneField(CommonArea, on_delete=models.CASCADE, null=True)

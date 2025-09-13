@@ -5,12 +5,12 @@ from rest_framework import viewsets
 from django.utils import timezone
 from django.contrib.auth.models import Group
 from .models import (
-	Campus, Space, Room, ElectricityMeter, CommonArea, Guest, Package,
+	Campus, Apartment, ElectricityMeter, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
 	GlobalNotifications, UserNotifications, CleaningType, ElectricityReading,
 )
 from .serializers import (
-	CampusSerializer, SpaceSerializer, RoomSerializer, ElectricityMeterSerializer,
+	CampusSerializer, ApartmentSerializer, ElectricityMeterSerializer,
 	CommonAreaSerializer, GuestSerializer, PackageSerializer, ElectricityReadingSerializer,
 	CommonAreaReservationSerializer, CleaningReservationSerializer, 
 	FaultReportSerializer, CustomUserSerializer, CXAppUserSerializer,
@@ -38,23 +38,10 @@ class CampusViewSet(viewsets.ModelViewSet):
 	permission_classes = [DjangoModelPermissions]
 
 
-class RoomViewSet(viewsets.ModelViewSet):
-	queryset = Room.objects.all()
-	serializer_class = RoomSerializer
+class ApartmentViewSet(viewsets.ModelViewSet):
+	queryset = Apartment.objects.all()
+	serializer_class = ApartmentSerializer
 	permission_classes = [DjangoModelPermissions]
-
-
-class SpaceViewSet(viewsets.ModelViewSet):
-	queryset = Space.objects.all()
-	serializer_class = SpaceSerializer
-	permission_classes = [DjangoModelPermissions]
-	
-	def get_queryset(self):
-		queryset = super().get_queryset()
-		room_id = self.request.query_params.get('room')
-		if room_id is not None:
-			queryset = queryset.filter(room_id=room_id)
-		return queryset
 
 
 class ElectricityReadingViewSet(viewsets.ModelViewSet):

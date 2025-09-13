@@ -32,7 +32,14 @@ class FaultTypeChoices(TextChoices):
 	INTERNET = "internet", "Internet"
 	OTHER = "other", "Other"
 
+
 class GuestStatusChoices(TextChoices):
 	IN_ARRIVO = "In Arrivo", "In Arrivo"
 	IN_HOUSE = "In House", "In House"
 	OFF_HOUSE = "Off House", "Off House"
+
+
+class RoomChoices(TextChoices):
+	CAMERA = "Camera", "Camera"
+	CUCINA = "Cucina", "Cucina"
+	BAGNO = "Bagno", "Bagno"

@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from .models import (
-	Campus, Space, Room, ElectricityMeter, CommonArea, Guest, Package,
+	Campus, Apartment, ElectricityMeter, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
 	GlobalNotifications, UserNotifications, CleaningType, ElectricityReading,
 )
@@ -16,13 +16,13 @@ class CampusSerializer(serializers.ModelSerializer):
 		fields = '__all__'  # Include tutti i campi del modello
 
 
-class RoomSerializer(serializers.ModelSerializer):
+class ApartmentSerializer(serializers.ModelSerializer):
 	
 	def validate(self, data):
 		number = data.get('number')
 		campus = data.get('campus')
 		instance = self.instance
-		qs = Room.objects.filter(number=number, campus=campus)
+		qs = Apartment.objects.filter(number=number, campus=campus)
 		
 		if instance:
 			qs = qs.exclude(id=instance.id)
@@ -33,15 +33,7 @@ class RoomSerializer(serializers.ModelSerializer):
 		return data
 
 	class Meta:
-		model = Room
-		fields = '__all__'
-
-
-class SpaceSerializer(serializers.ModelSerializer):
-	room_number = serializers.CharField(source='room.number', read_only=True)
-
-	class Meta:
-		model = Space
+		model = Apartment
 		fields = '__all__'
 
 
@@ -171,7 +163,7 @@ class CommonAreaReservationSerializer(serializers.ModelSerializer):
 	common_area_name = serializers.CharField(source='commonArea.name', read_only=True)
 
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
+	room = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
 	commonArea = serializers.PrimaryKeyRelatedField(queryset=CommonArea.objects.all())
 
 	class Meta:
@@ -184,7 +176,7 @@ class CleaningReservationSerializer(serializers.ModelSerializer):
 	space_name = serializers.CharField(source='space.name', read_only=True)
 
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
+	room = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
 	# cleaningType = serializers.PrimaryKeyRelatedField(queryset=CleaningType.objects.all())
 	space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
 
@@ -199,7 +191,7 @@ class FaultReportSerializer(serializers.ModelSerializer):
 	space_name = serializers.CharField(source='space.name', read_only=True)
 
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
+	room = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
 	# faultType = serializers.PrimaryKeyRelatedField(queryset=FaultType.objects.all())
 	space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
 
@@ -233,7 +225,7 @@ class UserNotificationsSerializer(serializers.ModelSerializer):
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
-	room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all(), allow_null=True, required=False)
+	room = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all(), allow_null=True, required=False)
 	room_number = serializers.SerializerMethodField(read_only=True)
 
 	class Meta:

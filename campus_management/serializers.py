@@ -38,6 +38,8 @@ class ApartmentSerializer(serializers.ModelSerializer):
 
 
 class ElectricityReadingSerializer(serializers.ModelSerializer):
+	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
+	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
 
 	def validate(self, data):
 		meter = data.get('meter')
@@ -136,7 +138,6 @@ class GuestSerializer(serializers.ModelSerializer):
 class PackageSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
 	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
-	recipient = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 
 	class Meta:
 		model = Package

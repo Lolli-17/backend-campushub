@@ -61,14 +61,13 @@ class Guest(BaseModel):
 	status = models.CharField(max_length=20, choices=GuestStatusChoices.choices, default=GuestStatusChoices.OFF_HOUSE)
 	document = models.CharField(max_length=50)
 	documentNumber = models.CharField(max_length=20)
-	# badgeNumber = models.CharField(max_length=20)
 	checkInTime = models.DateTimeField(null=True, blank=True)
 	nights = models.IntegerField(default=0)
 
 
 class Package(BaseModel):
 	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-	room = models.OneToOneField(Apartment, on_delete=models.CASCADE)
+	apartment = models.OneToOneField(Apartment, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
 	sender = models.CharField(max_length=50)
 	arrivalDate = models.DateField()
@@ -78,7 +77,7 @@ class Package(BaseModel):
 
 class CommonAreaReservation(BaseModel):
 	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-	room = models.OneToOneField(Apartment, on_delete=models.CASCADE)
+	apartment = models.OneToOneField(Apartment, on_delete=models.CASCADE)
 	commonArea = models.ForeignKey(CommonArea, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
 	reservationDate = models.DateField()
@@ -88,7 +87,7 @@ class CommonAreaReservation(BaseModel):
 
 class CleaningReservation(BaseModel):
 	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-	room = models.OneToOneField(Apartment, on_delete=models.CASCADE)
+	apartment = models.OneToOneField(Apartment, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
 	cleaningType = models.CharField(max_length=50, choices=CleaningTypeChoices.choices)
 	requestDate = models.DateField()
@@ -99,7 +98,7 @@ class CleaningReservation(BaseModel):
 
 class FaultReport(BaseModel):
 	resident = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-	room = models.OneToOneField(Apartment, on_delete=models.CASCADE)
+	apartment = models.OneToOneField(Apartment, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
 	reportDate = models.DateField()
 	space = models.OneToOneField(CommonArea, on_delete=models.CASCADE, null=True)

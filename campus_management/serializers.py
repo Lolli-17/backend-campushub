@@ -226,16 +226,16 @@ class CustomUserSerializer(serializers.ModelSerializer):
 		user.user_permissions.set(user_permissions_data)
 		return user
 	
-	def get_room_number(self, obj):
-		return obj.room.number if obj.room else None
+	def get_apartment_number(self, obj):
+		return obj.apartment.number if obj.apartment else None
 	
 	def validate(self, data):
 		role = data.get('role')
-		room = data.get('room')
+		apartment = data.get('apartment')
 
-		if role in [RoleChoices.RESIDENT, RoleChoices.GUEST] and not room:
+		if role in [RoleChoices.RESIDENT, RoleChoices.GUEST] and not apartment:
 			raise serializers.ValidationError("Per il ruolo di residente o guest, è necessario associare una stanza.")
-		if role not in [RoleChoices.RESIDENT, RoleChoices.GUEST] and room:
+		if role not in [RoleChoices.RESIDENT, RoleChoices.GUEST] and apartment:
 			raise serializers.ValidationError("Solo i residenti e i guest possono essere associati a una stanza.")
 
 		return data
@@ -259,8 +259,8 @@ class CXAppUserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = CustomUser
-		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance', 'role', 'isFirstAccess', 'phoneNumber', 'room', 'room_number']
-		extra_kwargs = {'room': {'write_only': True}} # Rende 'room' solo scrivibile
+		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance', 'role', 'isFirstAccess', 'phoneNumber', 'apartment', 'room_number']
+		extra_kwargs = {'apartment': {'write_only': True}}
 
-	def get_room_number(self, obj):
-		return obj.room.number if obj.room else None
+	def get_apartment_number(self, obj):
+		return obj.apartment.number if obj.apartment else None

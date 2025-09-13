@@ -59,28 +59,33 @@ class CommonAreaViewSet(viewsets.ModelViewSet):
 
 
 class GuestViewSet(viewsets.ModelViewSet):
-	queryset = Guest.objects.all()
-	serializer_class = GuestSerializer
+    queryset = Guest.objects.all()
+    serializer_class = GuestSerializer
 
-	def list(self, request, *args, **kwargs):
-		guests_to_update = []
-		now = timezone.now()
-		
-		for guest in self.get_queryset():
-			if guest.status == GuestStatusChoices.IN_ARRIVO and guest.checkInTime and guest.checkInTime <= now:
-				guest.status = GuestStatusChoices.IN_HOUSE
-				guests_to_update.append(guest)
+    def list(self, request, *args, **kwargs):
+        guests_to_update = []
+        now = timezone.now()
+        
+        for guest in self.get_queryset():
+            # 1. Aggiornamento dello stato da 'In Arrivo' a 'In House'
+            if guest.status == GuestStatusChoices.IN_ARRIVO and guest.checkInTime and guest.checkInTime <= now:
+                guest.status = GuestStatusChoices.IN_HOUSE
+                guests_to_update.append(guest)
+            
+            # 2. Aggiornamento del conteggio delle notti
+            if guest.status == GuestStatusChoices.IN_HOUSE and guest.checkInTime:
+                # Calcola la differenza in giorni tra la data di check-in e la data corrente
+                days_since_checkin = (now.date() - guest.checkInTime.date()).days
+                
+                if days_since_checkin > guest.nights:
+                    guest.nights = days_since_checkin
+                    guests_to_update.append(guest)
+        
+        # Aggiorna gli oggetti modificati in un'unica operazione
+        if guests_to_update:
+            Guest.objects.bulk_update(guests_to_update, ['status', 'nights'])
 
-			if guest.status == GuestStatusChoices.IN_HOUSE and guest.checkInTime:
-				days_since_checkin = (now.date() - guest.checkInTime.date()).days				
-				if days_since_checkin > guest.nights:
-					guest.nights = days_since_checkin
-					guests_to_update.append(guest)
-					
-		if guests_to_update:
-			Guest.objects.bulk_update(guests_to_update, ['status', 'nights'])
-
-		return super().list(request, *args, **kwargs)
+        return super().list(request, *args, **kwargs)
 
 
 class PackageViewSet(viewsets.ModelViewSet):

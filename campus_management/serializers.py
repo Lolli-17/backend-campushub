@@ -72,69 +72,34 @@ class GuestSerializer(serializers.ModelSerializer):
 	time_in_house = serializers.SerializerMethodField()
 	
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	
-	def create(self, validated_data):
-		resident = validated_data.get('resident')
-		
-		if resident.role not in [RoleChoices.RESIDENT, RoleChoices.GUEST]:
-			raise serializers.ValidationError(
-				{"resident": "Il residente deve essere un residente o un guest per avere una stanza associata."}
-			)
-		if not resident.apartment:
-			raise serializers.ValidationError(
-				{"resident": "Il residente non ha una stanza associata."}
-			)
-		
-		# L'appartamento viene preso dal residente e non dal corpo della richiesta
-		validated_data['apartment'] = resident.apartment
-		return super().create(validated_data)
-
-	def get_time_in_house(self, obj):
-		if obj.status == GuestStatusChoices.IN_HOUSE and obj.checkInTime:
-			timeDifference = timezone.now() - obj.checkInTime
-			hours = timeDifference.total_seconds() // 3600
-			minutes = (timeDifference.total_seconds() % 3600) // 60
-			return f'{int(hours)}h {int(minutes)}m'
-		return None
-
-	def validate(self, data):
-		apartment = data.get('apartment')
-		checkInTime = data.get('checkInTime')
-
-		if checkInTime:
-			if checkInTime <= timezone.now():
-				data['status'] = GuestStatusChoices.IN_HOUSE
-			else:
-				data['status'] = GuestStatusChoices.IN_ARRIVO
-		elif 'status' in data and data['status'] == GuestStatusChoices.IN_HOUSE and not checkInTime:
-			data['checkInTime'] = timezone.now()
-
-		if apartment and data.get('status') == GuestStatusChoices.IN_HOUSE:
-			if Guest.objects.filter(apartment=apartment, status=GuestStatusChoices.IN_HOUSE).exclude(pk=self.instance.pk if self.instance else None).exists():
-				raise serializers.ValidationError("Questa stanza è già occupata da un ospite in arrivo o in casa.")
-		
-		return data
-	
-	def update(self, instance, validated_data):
-		# Assicura che l'appartamento sia aggiornato solo se il residente viene cambiato
-		if 'resident' in validated_data:
-			resident = validated_data['resident']
-			if resident.role not in [RoleChoices.RESIDENT, RoleChoices.GUEST]:
-				raise serializers.ValidationError(
-					{"resident": "Il residente deve essere un residente o un guest per avere una stanza associata."}
-				)
-			if not resident.apartment:
-				raise serializers.ValidationError(
-					{"resident": "Il residente non ha una stanza associata."}
-				)
-			instance.apartment = resident.apartment
-		return super().update(instance, validated_data)
 
 	class Meta:
 		model = Guest
 		fields = '__all__'
 		read_only_fields = ['apartment', 'nights', 'checkOutTime']
+		
+	def create(self, validated_data):
+		resident = validated_data.get('resident')
+		if not resident.apartment:
+			raise serializers.ValidationError({"resident": "Il residente non ha una stanza associata."})
+		
+		validated_data['apartment'] = resident.apartment
+		return super().create(validated_data)
 
+	def update(self, instance, validated_data):
+		# Aggiungi questa logica per gestire il cambio di stato a mano
+		new_status = validated_data.get('status')
+		
+		if new_status == GuestStatusChoices.OFF_HOUSE and instance.status != GuestStatusChoices.OFF_HOUSE:
+			# Se lo stato viene cambiato manualmente in 'Off House', imposta il checkoutTime
+			instance.checkOutTime = timezone.now()
+		
+		# Se lo stato viene cambiato da 'Off House' a qualcos'altro, cancella il checkOutTime
+		if instance.status == GuestStatusChoices.OFF_HOUSE and new_status != GuestStatusChoices.OFF_HOUSE:
+			instance.checkOutTime = None
+			instance.nights = 0
+			
+		return super().update(instance, validated_data)
 
 class PackageSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)

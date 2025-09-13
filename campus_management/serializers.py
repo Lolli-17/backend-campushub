@@ -70,7 +70,6 @@ class GuestSerializer(serializers.ModelSerializer):
 	time_in_house = serializers.SerializerMethodField()
 
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	# room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
 
 	def create(self, validated_data):
 		resident = validated_data.get('resident')
@@ -79,12 +78,12 @@ class GuestSerializer(serializers.ModelSerializer):
 			raise serializers.ValidationError(
 				{"resident": "Il residente deve essere un residente o un guest per avere una stanza associata."}
 			)
-		if not resident.room:
+		if not resident.apartment:
 			raise serializers.ValidationError(
 				{"resident": "Il residente non ha una stanza associata."}
 			)
 		
-		validated_data['room'] = resident.room
+		validated_data['apartment'] = resident.apartment
 		return super().create(validated_data)
 
 	def get_time_in_house(self, obj):
@@ -96,7 +95,7 @@ class GuestSerializer(serializers.ModelSerializer):
 		return None
 
 	def validate(self, data):
-			room = data.get('room')
+			apartment = data.get('apartment')
 			checkInTime = data.get('checkInTime')
 
 			if checkInTime:
@@ -107,8 +106,8 @@ class GuestSerializer(serializers.ModelSerializer):
 			elif 'status' in data and data['status'] == GuestStatusChoices.IN_HOUSE and not checkInTime:
 				data['checkInTime'] = timezone.now()
 
-			if room and data.get('status') == GuestStatusChoices.IN_HOUSE:
-				if Guest.objects.filter(room=room, status=GuestStatusChoices.IN_HOUSE).exclude(pk=self.instance.pk if self.instance else None).exists():
+			if apartment and data.get('status') == GuestStatusChoices.IN_HOUSE:
+				if Guest.objects.filter(apartment=apartment, status=GuestStatusChoices.IN_HOUSE).exclude(pk=self.instance.pk if self.instance else None).exists():
 					raise serializers.ValidationError("Questa stanza è già occupata da un ospite in arrivo o in casa.")
 			
 			return data
@@ -120,18 +119,18 @@ class GuestSerializer(serializers.ModelSerializer):
 				raise serializers.ValidationError(
 					{"resident": "Il residente deve essere un residente o un guest per avere una stanza associata."}
 				)
-			if not resident.room:
+			if not resident.aparment:
 				raise serializers.ValidationError(
 					{"resident": "Il residente non ha una stanza associata."}
 				)
-			instance.room = resident.room
+			instance.aparment = resident.aparment
 
 		return super().update(instance, validated_data)
 
 	class Meta:
 		model = Guest
 		fields = '__all__'
-		read_only_fields = ['room', 'nights']
+		read_only_fields = ['apartment', 'nights']
 
 
 class PackageSerializer(serializers.ModelSerializer):

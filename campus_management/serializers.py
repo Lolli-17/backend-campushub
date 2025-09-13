@@ -67,11 +67,8 @@ class CommonAreaSerializer(serializers.ModelSerializer):
 
 
 class GuestSerializer(serializers.ModelSerializer):
-	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
 	time_in_house = serializers.SerializerMethodField()
-
-	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 
 	def create(self, validated_data):
 		resident = validated_data.get('resident')
@@ -137,7 +134,11 @@ class GuestSerializer(serializers.ModelSerializer):
 
 class PackageSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
+	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
+
+	def create(self, validated_data):
+		validated_data['apartment'] = self.resident.apartment
+		return super().create(validated_data)
 
 	class Meta:
 		model = Package
@@ -147,12 +148,14 @@ class PackageSerializer(serializers.ModelSerializer):
 
 class CommonAreaReservationSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
 	common_area_name = serializers.CharField(source='commonArea.name', read_only=True)
 
-	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	apartment = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
 	commonArea = serializers.PrimaryKeyRelatedField(queryset=CommonArea.objects.all())
+	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
+
+	def create(self, validated_data):
+		validated_data['apartment'] = self.resident.apartment
+		return super().create(validated_data)
 
 	class Meta:
 		model = CommonAreaReservation
@@ -161,10 +164,13 @@ class CommonAreaReservationSerializer(serializers.ModelSerializer):
 
 
 class CleaningReservationSerializer(serializers.ModelSerializer):
-	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
+	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
 
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	apartment = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
+
+	def create(self, validated_data):
+		validated_data['apartment'] = self.resident.apartment
+		return super().create(validated_data)
 
 	class Meta:
 		model = CleaningReservation
@@ -174,11 +180,13 @@ class CleaningReservationSerializer(serializers.ModelSerializer):
 
 class FaultReportSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
 	
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	apartment = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
 
+	def create(self, validated_data):
+		validated_data['apartment'] = self.resident.apartment
+		return super().create(validated_data)
+	
 	class Meta:
 		model = FaultReport
 		fields = '__all__'

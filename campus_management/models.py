@@ -56,7 +56,7 @@ class CommonArea(BaseModel):
 
 class Guest(BaseModel):
 	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-	room = models.ForeignKey(Apartment, on_delete=models.CASCADE)
+	apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
 	name = models.CharField(max_length=100)
 	status = models.CharField(max_length=20, choices=GuestStatusChoices.choices, default=GuestStatusChoices.OFF_HOUSE)
 	document = models.CharField(max_length=50)

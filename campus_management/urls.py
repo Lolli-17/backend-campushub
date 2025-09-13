@@ -1,9 +1,9 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
-    CampusViewSet, ApartmentViewSet, CommonAreaViewSet,
-    GuestViewSet, PackageViewSet, CommonAreaReservationViewSet, CleaningReservationViewSet,
-    FaultReportViewSet, CustomUserViewSet, UserNotificationsViewSet, 
+	CampusViewSet, ApartmentViewSet, CommonAreaViewSet,
+	GuestViewSet, PackageViewSet, CommonAreaReservationViewSet, CleaningReservationViewSet,
+	FaultReportViewSet, CustomUserViewSet, UserNotificationsViewSet, 
 	GlobalNotificationsViewSet, ElectricityReadingViewSet,
 )
 
@@ -25,5 +25,5 @@ router.register(r'custom-users', CustomUserViewSet, basename='customuser')
 
 # Le pattern URL per l'API.
 urlpatterns = [
-    path('', include(router.urls)),
+	path('', include(router.urls)),
 ]

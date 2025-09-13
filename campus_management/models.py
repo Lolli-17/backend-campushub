@@ -37,7 +37,7 @@ class CustomUser(AbstractUser, BaseModel):
 
 
 class ElectricityReading(BaseModel):
-	resident = models.ForeignKey(CustomUser, null=False)
+	resident = models.ForeignKey(CustomUser, null=False, on_delete=models.CASCADE)
 	reading_space = models.CharField(max_length=50, choices=RoomChoices.choices)
 	reading_date = models.DateField(default=timezone.now)
 	value = models.FloatField(null=False)

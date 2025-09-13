@@ -55,6 +55,7 @@ class ElectricityReadingSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = ElectricityReading
 		fields = '__all__'
+		read_only_fields = ['reading_date']
 	
 
 class CommonAreaSerializer(serializers.ModelSerializer):
@@ -141,6 +142,7 @@ class PackageSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Package
 		fields = '__all__'
+		read_only_fields = ['room']
 
 
 class CommonAreaReservationSerializer(serializers.ModelSerializer):
@@ -155,6 +157,7 @@ class CommonAreaReservationSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = CommonAreaReservation
 		fields = '__all__'
+		read_only_fields = ['room']
 
 
 class CleaningReservationSerializer(serializers.ModelSerializer):
@@ -166,6 +169,7 @@ class CleaningReservationSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = CleaningReservation
 		fields = '__all__'
+		read_only_fields = ['room']
 
 
 class FaultReportSerializer(serializers.ModelSerializer):
@@ -178,8 +182,8 @@ class FaultReportSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = FaultReport
 		fields = '__all__'
-		# Nota: per FileField come faultPhoto, Django REST Framework gestisce automaticamente gli upload.
-
+		read_only_fields = ['room']
+		
 
 class FaultTypeSerializer(serializers.Serializer):
 	value = serializers.CharField(source='0')

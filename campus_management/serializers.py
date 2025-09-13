@@ -38,37 +38,30 @@ class ApartmentSerializer(serializers.ModelSerializer):
 
 
 class ElectricityMeterSerializer(serializers.ModelSerializer):
-	space_name = serializers.CharField(source='space.name', read_only=True)
 	room_number = serializers.CharField(source='space.room.number', read_only=True)
 	
 	class Meta:
 		model = ElectricityMeter
 		fields = '__all__'
 
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		room_id = self.context.get('room_id')
-		if room_id:
-			if 'space' in self.fields:
-				self.fields['space'].queryset = Space.objects.filter(room_id=room_id)
-
 
 class ElectricityReadingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ElectricityReading
-        fields = '__all__'
+	class Meta:
+		model = ElectricityReading
+		fields = '__all__'
 
-    def validate(self, data):
-        meter = data.get('meter')
-        reading_space = data.get('reading_space')
+	def validate(self, data):
+		meter = data.get('meter')
+		reading_space = data.get('reading_space')
 
-        if meter and reading_space:
-            room_spaces = meter.room.spaces_list
-            if reading_space not in room_spaces:
-                raise serializers.ValidationError(
-                    {"reading_space": "Lo spazio selezionato non esiste per questa stanza."}
-                )
-        return data
+		if meter and reading_space:
+			# Controlla se il valore di reading_space è una scelta valida
+			valid_spaces = [choice[0] for choice in RoomChoices.choices]
+			if reading_space not in valid_spaces:
+				raise serializers.ValidationError(
+					{"reading_space": f"Lo spazio '{reading_space}' non è una scelta valida. Le opzioni sono: {valid_spaces}"}
+				)
+		return data
 	
 
 class CommonAreaSerializer(serializers.ModelSerializer):
@@ -186,12 +179,9 @@ class CleaningReservationSerializer(serializers.ModelSerializer):
 class FaultReportSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
 	room_number = serializers.CharField(source='room.number', read_only=True)
-	space_name = serializers.CharField(source='space.name', read_only=True)
-
+	
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
 	room = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
-	# faultType = serializers.PrimaryKeyRelatedField(queryset=FaultType.objects.all())
-	space = serializers.PrimaryKeyRelatedField(queryset=Space.objects.all())
 
 	class Meta:
 		model = FaultReport

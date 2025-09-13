@@ -10,7 +10,7 @@ from .views import (
 # Crea un router e registra i nostri ViewSet con esso.
 router = DefaultRouter()
 router.register(r'campuses', CampusViewSet)
-router.register(r'rooms', ApartmentViewSet)
+router.register(r'apartments', ApartmentViewSet)
 router.register(r'electricity-meters', ElectricityMeterViewSet, basename='electricitymeter')
 router.register(r'electricity-readings', ElectricityReadingViewSet, basename='electricityreading')
 router.register(r'common-areas', CommonAreaViewSet, basename='commonarea')

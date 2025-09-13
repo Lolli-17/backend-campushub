@@ -72,6 +72,32 @@ class GuestSerializer(serializers.ModelSerializer):
 	time_in_house = serializers.SerializerMethodField()
 	
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
+	
+	def get_time_in_house(self, obj):
+		if obj.status == GuestStatusChoices.IN_HOUSE and obj.checkInTime:
+			timeDifference = timezone.now() - obj.checkInTime
+			hours = timeDifference.total_seconds() // 3600
+			minutes = (timeDifference.total_seconds() % 3600) // 60
+			return f'{int(hours)}h {int(minutes)}m'
+		return None
+
+	def validate(self, data):
+		apartment = data.get('apartment')
+		checkInTime = data.get('checkInTime')
+
+		if checkInTime:
+			if checkInTime <= timezone.now():
+				data['status'] = GuestStatusChoices.IN_HOUSE
+			else:
+				data['status'] = GuestStatusChoices.IN_ARRIVO
+		elif 'status' in data and data['status'] == GuestStatusChoices.IN_HOUSE and not checkInTime:
+			data['checkInTime'] = timezone.now()
+
+		if apartment and data.get('status') == GuestStatusChoices.IN_HOUSE:
+			if Guest.objects.filter(apartment=apartment, status=GuestStatusChoices.IN_HOUSE).exclude(pk=self.instance.pk if self.instance else None).exists():
+				raise serializers.ValidationError("Questa stanza è già occupata da un ospite in arrivo o in casa.")
+		
+		return data
 
 	class Meta:
 		model = Guest
@@ -100,6 +126,7 @@ class GuestSerializer(serializers.ModelSerializer):
 			instance.nights = 0
 			
 		return super().update(instance, validated_data)
+	
 
 class PackageSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)

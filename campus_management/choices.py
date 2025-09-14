@@ -12,6 +12,12 @@ class RoleChoices(TextChoices):
 	RESIDENT = "Resident", "Resident"
 
 
+class ReservationStatusChoices(TextChoices):
+	FUTURE = "Future", "Future"
+	ODIERNE = "Odierne", "Odierne"
+	PASSATE = "Passate", "Passate"
+
+
 class PackageStatusChoices(TextChoices):
 	IN_CONSEGNA = "In Consegna", "In Consegna"
 	CONSEGNATO = "Consegnato", "Consegnato"

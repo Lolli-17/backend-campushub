@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from backend_def.models import BaseModel
 from .choices import (RoleChoices, StatusChoices, CleaningTypeChoices, 
 					  FaultTypeChoices, GuestStatusChoices, RoomChoices,
-					  PackageStatusChoices,
+					  PackageStatusChoices, ReservationStatusChoices,
 )
 from .mixin import ChoiceFieldMixin;
 from django.utils import timezone
@@ -86,7 +86,7 @@ class CommonAreaReservation(BaseModel):
 	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 	apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
 	commonArea = models.ForeignKey(CommonArea, on_delete=models.CASCADE)
-	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
+	status = models.CharField(max_length=20, choices=ReservationStatusChoices.choices, default=ReservationStatusChoices.FUTURE)
 	reservationDate = models.DateField()
 	timeSlot = models.TimeField()
 	notes = models.TextField(blank=True)
@@ -95,7 +95,7 @@ class CommonAreaReservation(BaseModel):
 class CleaningReservation(BaseModel):
 	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 	apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
-	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
+	status = models.CharField(max_length=20, choices=ReservationStatusChoices.choices, default=ReservationStatusChoices.FUTURE)
 	cleaningType = models.CharField(max_length=50, null=False)
 	requestDate = models.DateField()
 	timeSlot = models.CharField(max_length=20, null=False, default="9:00 - 10:00")

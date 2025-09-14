@@ -43,6 +43,19 @@ class ElectricityReadingSerializer(serializers.ModelSerializer):
 	apartment_number = serializers.CharField(source='resident.apartment.number', read_only=True)
 	cost = serializers.SerializerMethodField()
 
+	def get_cost(self, obj):		
+		last_reading = ElectricityReading.objects.filter(
+			resident=obj.resident,
+			reading_space=obj.reading_space
+		).exclude(pk=obj.pk).order_by('-reading_date').first()
+		
+		cost = 0.0
+		if last_reading:
+			consumed_units = obj.value - last_reading.value
+			cost = consumed_units * 0.35
+			
+		return round(cost, 2)
+
 	def create(self, validated_data):
 		resident = validated_data.get('resident')
 		new_reading_value = validated_data.get('value')

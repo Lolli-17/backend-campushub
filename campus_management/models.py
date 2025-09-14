@@ -73,7 +73,7 @@ class Guest(BaseModel):
 class Package(BaseModel):
 	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 	apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
-	status = models.CharField(max_length=20, choices=PackageStatusChoices.choices, default=PackageStatusChoices.PENDING)
+	status = models.CharField(max_length=20, choices=PackageStatusChoices.choices, default=PackageStatusChoices.IN_ARRIVO)
 	sender = models.CharField(max_length=50)
 	arrivalDate = models.DateField()
 	storage = models.CharField(max_length=20)

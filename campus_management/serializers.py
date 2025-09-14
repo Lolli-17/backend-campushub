@@ -60,7 +60,7 @@ class ElectricityReadingSerializer(serializers.ModelSerializer):
 		validated_data['cost'] = cost
 		reading_instance = super().create(validated_data)
 		
-		resident.last_electricity_reading = reading_instance.reading_date
+		resident.last_electricity_reading = new_reading_value
 		resident.save()
 
 		return reading_instance
@@ -321,7 +321,7 @@ class CXAppUserSerializer(serializers.ModelSerializer):
 		model = CustomUser
 		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance', 'lastElectricityReading',
 			 'role', 'isFirstAccess', 'phoneNumber', 'apartment', 'apartment_number']
-		extra_kwargs = {'apartment': {'write_only': True}}
+		extra_kwargs = {'apartment': {'write_only': True}, 'lastElectricityReading': {'read_only': True}}
 
 	def get_apartment_number(self, obj):
 		return obj.apartment.number if obj.apartment else None

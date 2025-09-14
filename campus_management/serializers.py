@@ -42,6 +42,38 @@ class ElectricityReadingSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
 	apartment_number = serializers.CharField(source='resident.apartment.number', read_only=True)
 
+	def create(self, validated_data):
+		resident = validated_data.get('resident')
+		new_reading_value = validated_data.get('value')
+		reading_space = validated_data.get('reading_space')
+		
+		# 1. Trova l'ultima lettura per lo stesso residente e lo stesso spazio
+		try:
+			last_reading = ElectricityReading.objects.filter(
+				resident=resident,
+				reading_space=reading_space
+			).order_by('-reading_date').first()
+		except ElectricityReading.DoesNotExist:
+			last_reading = None
+		
+		# 2. Se esiste una lettura precedente, calcola il costo
+		if last_reading:
+			cost_per_unit = 0.35
+			consumed_units = new_reading_value - last_reading.value
+			cost = consumed_units * cost_per_unit
+			
+			# 3. Aggiorna il saldo dell'utente in modo sicuro (evitando race condition)
+			CustomUser.objects.filter(pk=resident.pk).update(balance=F('balance') + cost)
+			
+		# 4. Crea la nuova lettura
+		reading_instance = super().create(validated_data)
+		
+		# 5. Aggiorna la data dell'ultima lettura per il residente
+		resident.last_electricity_reading = reading_instance.reading_date
+		resident.save()
+
+		return reading_instance
+
 	def validate(self, data):
 		meter = data.get('meter')
 		reading_space = data.get('reading_space')

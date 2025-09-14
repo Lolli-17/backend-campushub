@@ -35,6 +35,7 @@ class CustomUser(AbstractUser, BaseModel):
 	balance = models.FloatField(default=0.0)
 	apartment = models.ForeignKey(Apartment, on_delete=models.DO_NOTHING, null=True)
 	phoneNumber = models.CharField(max_length=20, null=True)
+	lastElectricityReading = models.FloatField(null=True, default=0, blank=True)
 
 	def __str__(self):
 		return self.username

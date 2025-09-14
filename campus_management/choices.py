@@ -12,7 +12,13 @@ class RoleChoices(TextChoices):
 	RESIDENT = "Resident", "Resident"
 
 
-class ReservationStatusChoices(TextChoices):
+class CleaningReservationStatusChoices(TextChoices):
+	TUTTI = "Tutti", "Tutti"
+	RICHIESTA = "Richiesta", "Richiesta"
+	EFFETTUATA = "Effettuata", "Effettuata"
+
+
+class SpaceReservationStatusChoices(TextChoices):
 	FUTURE = "Future", "Future"
 	ODIERNE = "Odierne", "Odierne"
 	PASSATE = "Passate", "Passate"

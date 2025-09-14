@@ -41,7 +41,6 @@ class ApartmentSerializer(serializers.ModelSerializer):
 class ElectricityReadingSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
 	apartment_number = serializers.CharField(source='resident.apartment.number', read_only=True)
-	cost = serializers.SerializerMethodField()
 
 	def create(self, validated_data):
 		resident = validated_data.get('resident')

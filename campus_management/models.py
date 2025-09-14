@@ -118,7 +118,7 @@ class GlobalNotifications(BaseModel):
 	campus = models.ForeignKey(Campus, on_delete=models.CASCADE)
 	title = models.CharField(max_length=100, null=False)
 	body = models.TextField(null=True)
-	# background = models.ImageField()
+	sendingTime = models.DateTimeField(default=timezone.now(), null=False)
 	is_active = models.BooleanField(default=True)
 
 	def __str__(self):
@@ -129,6 +129,7 @@ class UserNotifications(BaseModel):
 	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 	title = models.CharField(max_length=100, null=False)
 	body = models.TextField(null=True)
+	sendingTime = models.DateTimeField(default=timezone.now(), null=False)
 	is_read = models.BooleanField(default=False)
 	
 	def __str__(self):

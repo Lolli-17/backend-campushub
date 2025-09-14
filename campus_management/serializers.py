@@ -328,7 +328,8 @@ class CXAppUserSerializer(serializers.ModelSerializer):
 		model = CustomUser
 		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance', 'lastElectricityReading',
 			 'role', 'isFirstAccess', 'phoneNumber', 'apartment', 'apartment_number']
-		extra_kwargs = {'apartment': {'write_only': True}, 'lastElectricityReading': {'read_only': True}}
+		extra_kwargs = {'apartment': {'write_only': True}}
+		read_only_fields = ['lastElectricityReading']
 
 	def get_apartment_number(self, obj):
 		return obj.apartment.number if obj.apartment else None

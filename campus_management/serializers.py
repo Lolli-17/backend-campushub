@@ -57,7 +57,6 @@ class ElectricityReadingSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = ElectricityReading
 		fields = '__all__'
-		read_only_fields = ['reading_date']
 	
 
 class CommonAreaSerializer(serializers.ModelSerializer):

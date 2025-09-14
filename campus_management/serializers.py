@@ -41,6 +41,7 @@ class ApartmentSerializer(serializers.ModelSerializer):
 class ElectricityReadingSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
 	apartment_number = serializers.CharField(source='resident.apartment.number', read_only=True)
+	cost = serializers.SerializerMethodField()
 
 	def create(self, validated_data):
 		resident = validated_data.get('resident')
@@ -61,9 +62,6 @@ class ElectricityReadingSerializer(serializers.ModelSerializer):
 			cost_per_unit = 0.35
 			consumed_units = new_reading_value - last_reading.value
 			cost = consumed_units * cost_per_unit
-			
-			# 3. Aggiorna il saldo dell'utente in modo sicuro (evitando race condition)
-			CustomUser.objects.filter(pk=resident.pk).update(balance=F('balance') + cost)
 			
 		# 4. Crea la nuova lettura
 		reading_instance = super().create(validated_data)

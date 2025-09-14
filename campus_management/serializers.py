@@ -57,7 +57,7 @@ class ElectricityReadingSerializer(serializers.ModelSerializer):
 			consumed_units = new_reading_value - last_reading.value
 			cost = round(consumed_units * 0.35, 2)
 			
-		validated_data['cost_incurred'] = cost
+		validated_data['cost'] = cost
 		reading_instance = super().create(validated_data)
 		
 		resident.last_electricity_reading = reading_instance.reading_date

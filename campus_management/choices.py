@@ -12,6 +12,12 @@ class RoleChoices(TextChoices):
 	RESIDENT = "Resident", "Resident"
 
 
+class PackageStatusChoices(TextChoices):
+	IN_ARRIVO = "In Arrivo", "In Arrivo"
+	CONSEGNATO = "Consegnato", "Consegnato"
+	RITIRATO = "Ritirato", "Ritirato"
+	
+
 class StatusChoices(TextChoices):
 	PENDING = "pending", "Pending"
 	APPROVED = "approved", "Approved"

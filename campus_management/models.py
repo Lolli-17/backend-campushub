@@ -1,7 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from backend_def.models import BaseModel
-from .choices import RoleChoices, StatusChoices, CleaningTypeChoices, FaultTypeChoices, GuestStatusChoices, RoomChoices
+from .choices import (RoleChoices, StatusChoices, CleaningTypeChoices, 
+					  FaultTypeChoices, GuestStatusChoices, RoomChoices,
+					  PackageStatusChoices,
+)
 from .mixin import ChoiceFieldMixin;
 from django.utils import timezone
 
@@ -70,7 +73,7 @@ class Guest(BaseModel):
 class Package(BaseModel):
 	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 	apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
-	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
+	status = models.CharField(max_length=20, choices=PackageStatusChoices.choices, default=PackageStatusChoices.PENDING)
 	sender = models.CharField(max_length=50)
 	arrivalDate = models.DateField()
 	storage = models.CharField(max_length=20)

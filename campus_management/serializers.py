@@ -66,7 +66,7 @@ class ElectricityReadingSerializer(serializers.ModelSerializer):
 		reading_instance.cost = cost_to_save
 		reading_instance.save()
 		
-		resident.last_electricity_reading = new_reading_value
+		resident.lastElectricityReading = new_reading_value
 		resident.save()
 
 		return reading_instance

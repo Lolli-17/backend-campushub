@@ -46,6 +46,7 @@ class ElectricityReading(BaseModel):
 	reading_space = models.CharField(max_length=50, choices=RoomChoices.choices)
 	reading_date = models.DateField(default=timezone.now)
 	value = models.FloatField(null=False)
+	cost= models.FloatField(null=True, blank=True)
 
 	def __str__(self):
 		return f'Lettura del {self.reading_date} per {self.meter.room.number}'

@@ -43,43 +43,24 @@ class ElectricityReadingSerializer(serializers.ModelSerializer):
 	apartment_number = serializers.CharField(source='resident.apartment.number', read_only=True)
 	cost = serializers.SerializerMethodField()
 
-	def get_cost(self, obj):		
-		last_reading = ElectricityReading.objects.filter(
-			resident=obj.resident,
-			reading_space=obj.reading_space
-		).exclude(pk=obj.pk).order_by('-reading_date').first()
-		
-		cost = 0.0
-		if last_reading:
-			consumed_units = obj.value - last_reading.value
-			cost = consumed_units * 0.35
-			
-		return round(cost, 2)
-
 	def create(self, validated_data):
 		resident = validated_data.get('resident')
 		new_reading_value = validated_data.get('value')
 		reading_space = validated_data.get('reading_space')
 		
-		# 1. Trova l'ultima lettura per lo stesso residente e lo stesso spazio
-		try:
-			last_reading = ElectricityReading.objects.filter(
-				resident=resident,
-				reading_space=reading_space
-			).order_by('-reading_date').first()
-		except ElectricityReading.DoesNotExist:
-			last_reading = None
+		last_reading = ElectricityReading.objects.filter(
+			resident=resident,
+			reading_space=reading_space
+		).order_by('-reading_date').first()
 		
-		# 2. Se esiste una lettura precedente, calcola il costo
+		cost = 0.0
 		if last_reading:
-			cost_per_unit = 0.35
 			consumed_units = new_reading_value - last_reading.value
-			cost = consumed_units * cost_per_unit
+			cost = round(consumed_units * 0.35, 2)
 			
-		# 4. Crea la nuova lettura
+		validated_data['cost_incurred'] = cost
 		reading_instance = super().create(validated_data)
 		
-		# 5. Aggiorna la data dell'ultima lettura per il residente
 		resident.last_electricity_reading = reading_instance.reading_date
 		resident.save()
 

@@ -277,7 +277,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 		model = CustomUser
 		fields = (
 			'id', 'username', 'email', 'role', 'isFirstAccess', 'first_name', 'last_name', 'apartment', 'apartment_number',
-			'is_staff', 'is_active', 'date_joined', 'last_login', 'groups', 'user_permissions', 'password'
+			'lastElectricityReading', 'is_staff', 'is_active', 'date_joined', 'last_login', 'groups', 'user_permissions', 'password'
 		)
 		read_only_fields = ('date_joined', 'last_login',)
 		extra_kwargs = {'password': {'write_only': True, 'required': False}}
@@ -327,7 +327,8 @@ class CXAppUserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = CustomUser
-		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance', 'role', 'isFirstAccess', 'phoneNumber', 'apartment', 'apartment_number']
+		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance', 'lastElectricityReading',
+			 'role', 'isFirstAccess', 'phoneNumber', 'apartment', 'apartment_number']
 		extra_kwargs = {'apartment': {'write_only': True}}
 
 	def get_apartment_number(self, obj):

@@ -94,10 +94,10 @@ class CleaningReservation(BaseModel):
 	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 	apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
 	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
-	cleaningType = models.CharField(max_length=50, choices=CleaningTypeChoices.choices)
+	cleaningType = models.CharField(max_length=50, null=False)
 	requestDate = models.DateField()
-	timeSlot = models.TimeField()
-	space = models.OneToOneField(CommonArea, on_delete=models.CASCADE, null=True)
+	timeSlot = models.CharField(max_length=20, null=False, default="9:00 - 10:00")
+	space = models.CharField(max_length=20, null=False)
 	notes = models.TextField(blank=True)
 
 

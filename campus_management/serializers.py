@@ -54,8 +54,10 @@ class ElectricityReadingSerializer(serializers.ModelSerializer):
 		
 		cost = 0.0
 		if last_reading:
-			consumed_units = new_reading_value - last_reading.value
+			consumed_units = new_reading_value - resident.lastElectricityReading
 			cost = round(consumed_units * 0.35, 2)
+		else:
+			cost = round(new_reading_value * 0.35, 2)
 			
 		validated_data['cost'] = cost
 		

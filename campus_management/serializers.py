@@ -58,12 +58,19 @@ class ElectricityReadingSerializer(serializers.ModelSerializer):
 			cost = round(consumed_units * 0.35, 2)
 			
 		validated_data['cost'] = cost
+		
+		cost_to_save = validated_data.pop('cost')
+		
 		reading_instance = super().create(validated_data)
+		
+		reading_instance.cost = cost_to_save
+		reading_instance.save()
 		
 		resident.last_electricity_reading = new_reading_value
 		resident.save()
 
 		return reading_instance
+
 
 	def validate(self, data):
 		meter = data.get('meter')

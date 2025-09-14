@@ -95,7 +95,7 @@ class CommonAreaReservation(BaseModel):
 class CleaningReservation(BaseModel):
 	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 	apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
-	status = models.CharField(max_length=20, choices=CleaningReservationStatusChoices.choices, default=CleaningReservationStatusChoices.FUTURE)
+	status = models.CharField(max_length=20, choices=CleaningReservationStatusChoices.choices, default=CleaningReservationStatusChoices.TUTTI)
 	cleaningType = models.CharField(max_length=50, null=False)
 	requestDate = models.DateField()
 	timeSlot = models.CharField(max_length=20, null=False, default="9:00 - 10:00")

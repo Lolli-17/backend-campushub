@@ -13,10 +13,10 @@ class RoleChoices(TextChoices):
 
 
 class PackageStatusChoices(TextChoices):
-	IN_ARRIVO = "In Arrivo", "In Arrivo"
+	IN_CONSEGNA = "In Consegna", "In Consegna"
 	CONSEGNATO = "Consegnato", "Consegnato"
 	RITIRATO = "Ritirato", "Ritirato"
-	
+
 
 class StatusChoices(TextChoices):
 	PENDING = "pending", "Pending"

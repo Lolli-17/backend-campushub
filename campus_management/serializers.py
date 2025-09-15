@@ -1,4 +1,3 @@
-# serializers.py
 from campus_management.choices import GuestStatusChoices
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
@@ -6,7 +5,7 @@ from django.utils import timezone
 from .models import (
 	Campus, Apartment, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
-	GlobalNotifications, UserNotifications, ElectricityReading,
+	GlobalNotifications, UserNotifications, ElectricityReading, CleaningType
 )
 from .choices import CleaningTypeChoices, FaultTypeChoices, RoleChoices, RoomChoices
 
@@ -47,50 +46,20 @@ class ElectricityReadingSerializer(serializers.ModelSerializer):
 		new_reading_value = validated_data.get('value')
 		reading_space = validated_data.get('reading_space')
 		
-		last_reading = ElectricityReading.objects.filter(
-			resident=resident,
-			reading_space=reading_space
-		).order_by('-reading_date').first()
-		
-		cost = 0.0
-		if last_reading:
-			consumed_units = new_reading_value - resident.lastElectricityReading
-			cost = round(consumed_units * 0.35, 2)
-		else:
-			cost = round(new_reading_value * 0.35, 2)
-			
-		validated_data['cost'] = cost
-		
-		cost_to_save = validated_data.pop('cost')
-		
-		reading_instance = super().create(validated_data)
-		
-		reading_instance.cost = cost_to_save
-		reading_instance.save()
-		
-		resident.lastElectricityReading = new_reading_value
-		resident.save()
+		if reading_space:
+			if reading_space not in [choice[0] for choice in RoomChoices.choices]:
+				raise serializers.ValidationError(f"Invalid reading_space choice: {reading_space}")
 
-		return reading_instance
+		if resident and new_reading_value is not None:
+			resident.lastElectricityReading = new_reading_value
+			resident.save()
 
+		return super().create(validated_data)
 
-	def validate(self, data):
-		meter = data.get('meter')
-		reading_space = data.get('reading_space')
-
-		if meter and reading_space:
-			valid_spaces = [choice[0] for choice in RoomChoices.choices]
-			if reading_space not in valid_spaces:
-				raise serializers.ValidationError(
-					{"reading_space": f"Lo spazio '{reading_space}' non è una scelta valida. Le opzioni sono: {valid_spaces}"}
-				)
-		return data
-	
 	class Meta:
 		model = ElectricityReading
 		fields = '__all__'
-		read_only_fields = ['cost']
-	
+
 
 class CommonAreaSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -100,171 +69,53 @@ class CommonAreaSerializer(serializers.ModelSerializer):
 
 class GuestSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
-	time_in_house = serializers.SerializerMethodField()
-	
-	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	apartment = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
-
-	def create(self, validated_data):
-		resident = validated_data.get('resident')
-		if resident.role not in [RoleChoices.RESIDENT, RoleChoices.GUEST]:
-			raise serializers.ValidationError(
-				{"resident": "Il residente deve essere un residente o un guest per avere una stanza associata."}
-			)
-		if not resident.apartment:
-			raise serializers.ValidationError(
-				{"resident": "Il residente non ha una stanza associata."}
-			)
-		
-		validated_data['apartment'] = resident.apartment
-		return super().create(validated_data)
-
-	def get_time_in_house(self, obj):
-		if obj.status == GuestStatusChoices.IN_HOUSE and obj.checkInTime:
-			timeDifference = timezone.now() - obj.checkInTime
-			hours = timeDifference.total_seconds() // 3600
-			minutes = (timeDifference.total_seconds() % 3600) // 60
-			return f'{int(hours)}h {int(minutes)}m'
-		return None
-
-	def validate(self, data):
-		apartment = data.get('apartment')
-		checkInTime = data.get('checkInTime')
-
-		if checkInTime:
-			if checkInTime <= timezone.now():
-				data['status'] = GuestStatusChoices.IN_HOUSE
-			else:
-				data['status'] = GuestStatusChoices.IN_ARRIVO
-		elif 'status' in data and data['status'] == GuestStatusChoices.IN_HOUSE and not checkInTime:
-			data['checkInTime'] = timezone.now()
-
-		if apartment and data.get('status') == GuestStatusChoices.IN_HOUSE:
-			if Guest.objects.filter(apartment=apartment, status=GuestStatusChoices.IN_HOUSE).exclude(pk=self.instance.pk if self.instance else None).exists():
-				raise serializers.ValidationError("Questa stanza è già occupata da un ospite in arrivo o in casa.")
-		
-		return data
-	
-	def update(self, instance, validated_data):
-		if 'resident' in validated_data:
-			resident = validated_data['resident']
-			if resident.role not in [RoleChoices.RESIDENT, RoleChoices.GUEST]:
-				raise serializers.ValidationError(
-					{"resident": "Il residente deve essere un residente o un guest per avere una stanza associata."}
-				)
-			if not resident.apartment:
-				raise serializers.ValidationError(
-					{"resident": "Il residente non ha una stanza associata."}
-				)
-			instance.apartment = resident.apartment
-
-		return super().update(instance, validated_data)
 
 	class Meta:
 		model = Guest
 		fields = '__all__'
-		read_only_fields = ['apartment', 'nights']
+
+	def validate(self, data):
+		resident = data.get('resident')
+		
+		if resident.role not in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
+			raise serializers.ValidationError({"resident": "Il residente deve avere il ruolo di Student o Hotel per essere associato a un'istanza Guest."})
+
+		if not resident.apartment:
+			raise serializers.ValidationError({"resident": "Il residente non ha una stanza associata."})
+
+		return data
 
 
 class PackageSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
-	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-
-	def create(self, validated_data):
-		resident = validated_data.get('resident')
-		if not resident:
-			raise serializers.ValidationError({"resident": "Il campo residente è obbligatorio."})
-		validated_data['apartment'] = resident.apartment
-		return super().create(validated_data)
-
+	
 	class Meta:
 		model = Package
 		fields = '__all__'
-		read_only_fields = ['apartment']
 
 
 class CommonAreaReservationSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
-
-	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-
-	def create(self, validated_data):
-		resident = validated_data.get('resident')
-		if not resident:
-			raise serializers.ValidationError({"resident": "Il campo residente è obbligatorio."})
-		if not resident.apartment:
-			raise serializers.ValidationError({"resident": "Il residente deve avere una stanza associata per poter effettuare prenotazioni."})
-		
-		validated_data['apartment'] = resident.apartment
-		return super().create(validated_data)
-
+	
 	class Meta:
 		model = CommonAreaReservation
 		fields = '__all__'
-		read_only_fields = ['apartment']
 
 
 class CleaningReservationSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
-	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
-
-	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-
-	def create(self, validated_data):
-		resident = validated_data.get('resident')
-		if not resident:
-			raise serializers.ValidationError({"resident": "Il campo residente è obbligatorio."})
-		if not resident.apartment:
-			raise serializers.ValidationError({"resident": "Il residente deve avere una stanza associata per poter effettuare prenotazioni."})
-		
-		validated_data['apartment'] = resident.apartment
-		return super().create(validated_data)
-
+	
 	class Meta:
 		model = CleaningReservation
 		fields = '__all__'
-		read_only_fields = ['apartment']
 
 
 class FaultReportSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
 	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
 	
-	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-
-	def create(self, validated_data):
-		resident = validated_data.get('resident')
-		if not resident:
-			raise serializers.ValidationError({"resident": "Il campo residente è obbligatorio."})
-		if not resident.apartment:
-			raise serializers.ValidationError({"resident": "Il residente deve avere una stanza associata per poter effettuare prenotazioni."})
-		
-		validated_data['apartment'] = resident.apartment
-		return super().create(validated_data)
-	
 	class Meta:
 		model = FaultReport
-		fields = '__all__'
-		read_only_fields = ['apartment']
-		
-
-class FaultTypeSerializer(serializers.Serializer):
-	value = serializers.CharField(source='0')
-	label = serializers.CharField(source='1')
-
-
-class GlobalNotificationsSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = GlobalNotifications
-		fields = '__all__'
-
-
-class UserNotificationsSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = UserNotifications
 		fields = '__all__'
 
 
@@ -277,7 +128,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 		fields = (
 			'id', 'username', 'email', 'role', 'isFirstAccess', 
 			'first_name', 'last_name', 'apartment', 'apartment_number',
-			'lastElectricityReading', 'is_staff', 'phoneNumber',
+			'lastElectricityReading', 'is_staff', 'phoneNumber', # Correzione: phoneNumber
 			'is_active', 'date_joined', 'last_login', 'groups', 'user_permissions', 'password'
 		)
 		read_only_fields = ('date_joined', 'last_login',)
@@ -302,10 +153,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
 		role = data.get('role')
 		apartment = data.get('apartment')
 
-		if role in [RoleChoices.RESIDENT, RoleChoices.GUEST] and not apartment:
-			raise serializers.ValidationError("Per il ruolo di residente o guest, è necessario associare una stanza.")
-		if role not in [RoleChoices.RESIDENT, RoleChoices.GUEST] and apartment:
-			raise serializers.ValidationError("Solo i residenti e i guest possono essere associati a una stanza.")
+		if role in [RoleChoices.STUDENT, RoleChoices.HOTEL] and not apartment:
+			raise serializers.ValidationError("Per il ruolo di studente o hotel, è necessario associare una stanza.")
+		if role not in [RoleChoices.STUDENT, RoleChoices.HOTEL] and apartment:
+			raise serializers.ValidationError("Solo gli studenti e gli hotel possono essere associati a una stanza.")
 
 		return data
 
@@ -325,11 +176,10 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 class CXAppUserSerializer(serializers.ModelSerializer):
 	apartment_number = serializers.SerializerMethodField(read_only=True)
-
+	
 	class Meta:
 		model = CustomUser
-		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'lastElectricityReading',
-			 'role', 'isFirstAccess', 'phoneNumber', 'apartment', 'apartment_number']
+		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance', 'role', 'isFirstAccess', 'phoneNumber', 'apartment', 'apartment_number']
 		extra_kwargs = {'apartment': {'write_only': True}}
 		read_only_fields = ['lastElectricityReading']
 

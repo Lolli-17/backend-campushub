@@ -8,7 +8,7 @@ from django.contrib.auth.models import Group
 from .models import (
 	Campus, Apartment, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
-	GlobalNotifications, UserNotifications, ElectricityReading,
+	GlobalNotifications, UserNotifications, ElectricityReading, CleaningType,
 )
 from .serializers import (
 	CampusSerializer, ApartmentSerializer,
@@ -17,6 +17,7 @@ from .serializers import (
 	FaultReportSerializer, CustomUserSerializer, CXAppUserSerializer,
 	GlobalNotificationsSerializer, UserNotificationsSerializer,
 )
+from .choices import RoleChoices
 
 
 class RegisterUser(generics.CreateAPIView):
@@ -25,12 +26,19 @@ class RegisterUser(generics.CreateAPIView):
 
 
 class GetCurrentUser(APIView):
-	serializer_class = CustomUserSerializer
 	permission_classes = [IsAuthenticated]
 	
 	def get(self, request, *args, **kwargs):
 		serializer = CXAppUserSerializer(request.user)
 		return Response(serializer.data)
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, format=None):
+        logout(request)
+        return Response({"detail": "Successfully logged out."})
 
 
 class CampusViewSet(viewsets.ModelViewSet):
@@ -49,8 +57,8 @@ class ElectricityReadingViewSet(viewsets.ModelViewSet):
 	queryset = ElectricityReading.objects.all()
 	serializer_class = ElectricityReadingSerializer
 	permission_classes = [DjangoModelPermissions]
-
-
+	
+	
 class CommonAreaViewSet(viewsets.ModelViewSet):
 	queryset = CommonArea.objects.all()
 	serializer_class = CommonAreaSerializer
@@ -62,13 +70,17 @@ class GuestViewSet(viewsets.ModelViewSet):
 	serializer_class = GuestSerializer
 	permission_classes = [DjangoModelPermissions]
 
-	def update(self, request, *args, **kwargs):
+	def perform_update(self, serializer):
 		instance = self.get_object()
-		if 'status' in request.data and request.data['status'] == 'in house' and instance.status != 'in house':
-			instance.check_in_time = timezone.now()
-		elif 'status' in request.data and request.data['status'] != 'in house' and instance.status == 'in house':
-			instance.check_in_time = None
-		return super().update(request, *args, **kwargs)
+		if 'resident' in serializer.validated_data:
+			resident = serializer.validated_data.get('resident')
+			if resident.role not in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
+				raise generics.serializers.ValidationError({"resident": "Il residente deve avere il ruolo di Student o Hotel per essere assegnato a un'istanza Guest."})
+
+			if not resident.apartment:
+				raise generics.serializers.ValidationError({"resident": "Il residente non ha una stanza associata."})
+
+		serializer.save()
 
 
 class PackageViewSet(viewsets.ModelViewSet):
@@ -115,16 +127,16 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 		user_type = self.request.query_params.get("type")
 		if user_type == "site":
 			return CustomUser.objects.filter(role__in=[
-				'community_ambassador',
-				'front_office',
-				'front_office_manager',
-				'marketing',
-				'resident_manager',
+				RoleChoices.COMMUNITY_AMBASSADOR,
+				RoleChoices.FRONT_OFFICE,
+				RoleChoices.FRONT_OFFICE_MANAGER,
+				RoleChoices.MARKETING,
+				RoleChoices.RESIDENT_MANAGER,
 			])
 		elif user_type == "app":
 			return CustomUser.objects.filter(role__in=[
-				'resident',
-				'guest',
+				RoleChoices.STUDENT,
+				RoleChoices.HOTEL,
 			])
 		return CustomUser.objects.all()
 	
@@ -135,21 +147,3 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 		
 		user.groups.set(groups_data)
 		user.user_permissions.set(permissions_data)
-	
-
-class GetCXAppCurrentUser(generics.GenericAPIView):
-	serializer_class = CXAppUserSerializer
-	permission_classes = [DjangoModelPermissions]
-
-	def get(self, request, *args, **kwargs):
-		user = self.serializer_class(request.user)
-		return Response(user.data)
-	
-
-
-class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
-    
-    def post(self, request, format=None):
-        logout(request)
-        return Response({"detail": "Successfully logged out."})

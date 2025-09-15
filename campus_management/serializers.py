@@ -118,7 +118,7 @@ class GuestSerializer(serializers.ModelSerializer):
 	def update(self, instance, validated_data):
 		if 'resident' in validated_data:
 			resident = validated_data['resident']
-			if resident.role not in [RoleChoices.RESIDENT, RoleChoices.GUEST]:
+			if resident.role not in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
 				raise serializers.ValidationError(
 					{"resident": "Il residente deve essere un residente o un guest per avere una stanza associata."}
 				)

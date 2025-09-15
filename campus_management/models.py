@@ -108,7 +108,7 @@ class FaultReport(BaseModel):
 	status = models.CharField(max_length=20, choices=ReservationStatusChoices.choices, default=ReservationStatusChoices.RICHIESTA)
 	reportDate = models.DateField()
 	space = models.CharField(max_length=50, null=True)
-	faultType = models.CharField(max_length=50, choices=FaultTypeChoices.choices)
+	faultType = models.CharField(max_length=50, null=False)
 	notes = models.TextField(blank=True)
 
 

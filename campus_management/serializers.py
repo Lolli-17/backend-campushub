@@ -69,21 +69,71 @@ class CommonAreaSerializer(serializers.ModelSerializer):
 
 class GuestSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
+	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
+	time_in_house = serializers.SerializerMethodField()
+	
+	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
+	apartment = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
+
+	def create(self, validated_data):
+		resident = validated_data.get('resident')
+		if resident.role not in [RoleChoices.RESIDENT, RoleChoices.GUEST]:
+			raise serializers.ValidationError(
+				{"resident": "Il residente deve essere un residente o un guest per avere una stanza associata."}
+			)
+		if not resident.apartment:
+			raise serializers.ValidationError(
+				{"resident": "Il residente non ha una stanza associata."}
+			)
+		
+		validated_data['apartment'] = resident.apartment
+		return super().create(validated_data)
+
+	def get_time_in_house(self, obj):
+		if obj.status == GuestStatusChoices.IN_HOUSE and obj.checkInTime:
+			timeDifference = timezone.now() - obj.checkInTime
+			hours = timeDifference.total_seconds() // 3600
+			minutes = (timeDifference.total_seconds() % 3600) // 60
+			return f'{int(hours)}h {int(minutes)}m'
+		return None
+
+	def validate(self, data):
+		apartment = data.get('apartment')
+		checkInTime = data.get('checkInTime')
+
+		if checkInTime:
+			if checkInTime <= timezone.now():
+				data['status'] = GuestStatusChoices.IN_HOUSE
+			else:
+				data['status'] = GuestStatusChoices.IN_ARRIVO
+		elif 'status' in data and data['status'] == GuestStatusChoices.IN_HOUSE and not checkInTime:
+			data['checkInTime'] = timezone.now()
+
+		if apartment and data.get('status') == GuestStatusChoices.IN_HOUSE:
+			if Guest.objects.filter(apartment=apartment, status=GuestStatusChoices.IN_HOUSE).exclude(pk=self.instance.pk if self.instance else None).exists():
+				raise serializers.ValidationError("Questa stanza è già occupata da un ospite in arrivo o in casa.")
+		
+		return data
+	
+	def update(self, instance, validated_data):
+		if 'resident' in validated_data:
+			resident = validated_data['resident']
+			if resident.role not in [RoleChoices.RESIDENT, RoleChoices.GUEST]:
+				raise serializers.ValidationError(
+					{"resident": "Il residente deve essere un residente o un guest per avere una stanza associata."}
+				)
+			if not resident.apartment:
+				raise serializers.ValidationError(
+					{"resident": "Il residente non ha una stanza associata."}
+				)
+			instance.apartment = resident.apartment
+
+		return super().update(instance, validated_data)
 
 	class Meta:
 		model = Guest
 		fields = '__all__'
-
-	def validate(self, data):
-		resident = data.get('resident')
-		
-		if resident.role not in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
-			raise serializers.ValidationError({"resident": "Il residente deve avere il ruolo di Student o Hotel per essere associato a un'istanza Guest."})
-
-		if not resident.apartment:
-			raise serializers.ValidationError({"resident": "Il residente non ha una stanza associata."})
-
-		return data
+		read_only_fields = ['apartment', 'nights']
 
 
 class PackageSerializer(serializers.ModelSerializer):
@@ -191,7 +241,7 @@ class CXAppUserSerializer(serializers.ModelSerializer):
 	
 	class Meta:
 		model = CustomUser
-		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance', 'role', 'isFirstAccess', 'phoneNumber', 'apartment', 'apartment_number']
+		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'isFirstAccess', 'phoneNumber', 'apartment', 'apartment_number']
 		extra_kwargs = {'apartment': {'write_only': True}}
 		read_only_fields = ['lastElectricityReading']
 

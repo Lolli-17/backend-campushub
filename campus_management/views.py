@@ -22,7 +22,7 @@ from .choices import RoleChoices
 
 class RegisterUser(generics.CreateAPIView):
 	serializer_class = CustomUserSerializer
-	permission_classes = [DjangoModelPermissions]
+	permission_classes = [AllowAny]
 
 
 class GetCurrentUser(APIView):

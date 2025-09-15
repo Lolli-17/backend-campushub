@@ -1,8 +1,9 @@
 from rest_framework import generics, viewsets
-from rest_framework.permissions import AllowAny, DjangoModelPermissions
+from rest_framework.permissions import AllowAny, DjangoModelPermissions, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils import timezone
+from django.contrib.auth import logout
 from django.contrib.auth.models import Group
 from .models import (
 	Campus, Apartment, CommonArea, Guest, Package,
@@ -25,7 +26,7 @@ class RegisterUser(generics.CreateAPIView):
 
 class GetCurrentUser(APIView):
 	serializer_class = CustomUserSerializer
-	permission_classes = [DjangoModelPermissions]
+	permission_classes = [IsAuthenticated]
 	
 	def get(self, request, *args, **kwargs):
 		serializer = CXAppUserSerializer(request.user)
@@ -147,7 +148,7 @@ class GetCXAppCurrentUser(generics.GenericAPIView):
 
 
 class LogoutView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     
     def post(self, request, format=None):
         logout(request)

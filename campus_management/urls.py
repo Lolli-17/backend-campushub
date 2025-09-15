@@ -7,7 +7,7 @@ from .views import (
 	GlobalNotificationsViewSet, ElectricityReadingViewSet,
 )
 
-# Crea un router e registra i nostri ViewSet con esso.
+
 router = DefaultRouter()
 router.register(r'campuses', CampusViewSet)
 router.register(r'apartments', ApartmentViewSet)
@@ -22,8 +22,6 @@ router.register(r'user-notifications', UserNotificationsViewSet, basename='usern
 router.register(r'global-notifications', GlobalNotificationsViewSet, basename='globalnotification')
 router.register(r'custom-users', CustomUserViewSet, basename='customuser')
 
-
-# Le pattern URL per l'API.
 urlpatterns = [
 	path('', include(router.urls)),
 ]

@@ -8,12 +8,11 @@ class RoleChoices(TextChoices):
 	FRONT_OFFICE = "Front Office", "Front Office"
 	COMMUNITY_AMBASSADOR = "Community Ambassador", "Community Ambassador"
 	MARKETING = "Marketing", "Marketing"
-	GUEST = "Guest", "Guest"
-	RESIDENT = "Resident", "Resident"
+	HOTEL = "Hotel", "Hotel"
+	STUDENT = "Student", "Student"
 
 
-class CleaningReservationStatusChoices(TextChoices):
-	TUTTI = "Tutti", "Tutti"
+class ReservationStatusChoices(TextChoices):
 	RICHIESTA = "Richiesta", "Richiesta"
 	EFFETTUATA = "Effettuata", "Effettuata"
 

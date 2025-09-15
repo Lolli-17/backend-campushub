@@ -15,3 +15,14 @@ urlpatterns = [
 	path('user/get-current', views.GetCurrentUser.as_view(), name='current_user'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+
+#// richiesta effettuata
+# faulttype testo
+# space testo
+#// togliere status tutti
+#// hotel e student
+# common area testo
+# time slot testo
+#// campo telefono
+# notti
+# notifiche cambio status

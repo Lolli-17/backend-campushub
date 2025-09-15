@@ -1,12 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from backend_def.models import BaseModel
-from .choices import (RoleChoices, StatusChoices, CleaningReservationStatusChoices,
-					  FaultTypeChoices, GuestStatusChoices, RoomChoices,
-					  PackageStatusChoices, SpaceReservationStatusChoices,
-)
-from .mixin import ChoiceFieldMixin;
 from django.utils import timezone
+from .mixin import ChoiceFieldMixin;
+from .choices import (
+	RoleChoices, StatusChoices, ReservationStatusChoices,
+	FaultTypeChoices, GuestStatusChoices, RoomChoices,
+	PackageStatusChoices, SpaceReservationStatusChoices,
+)
 
 class Campus(BaseModel):
 	name = models.CharField(max_length=200)
@@ -28,13 +29,11 @@ class Apartment(BaseModel):
 
 
 class CustomUser(AbstractUser, BaseModel):
-	role = models.CharField(max_length=30, choices=RoleChoices.choices, default=RoleChoices.GUEST)
+	role = models.CharField(max_length=30, choices=RoleChoices.choices, default=RoleChoices.STUDENT)
 	isFirstAccess = models.BooleanField(default=True)
-	phoneNumber = models.BigIntegerField(null=True)
 	campus = models.OneToOneField(Campus, on_delete=models.DO_NOTHING, null=True)
-	balance = models.FloatField(default=0.0)
 	apartment = models.ForeignKey(Apartment, on_delete=models.DO_NOTHING, null=True)
-	phoneNumber = models.CharField(max_length=20, null=True)
+	phoneNumber = models.CharField(max_length=20, null=True, blank=True)
 	lastElectricityReading = models.FloatField(null=True, default=0, blank=True)
 
 	def __str__(self):
@@ -85,17 +84,17 @@ class Package(BaseModel):
 class CommonAreaReservation(BaseModel):
 	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 	apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
-	commonArea = models.ForeignKey(CommonArea, on_delete=models.CASCADE)
+	commonArea = models.CharField(max_length=50, null=False)
 	status = models.CharField(max_length=20, choices=SpaceReservationStatusChoices.choices, default=SpaceReservationStatusChoices.FUTURE)
 	reservationDate = models.DateField()
-	timeSlot = models.TimeField()
+	timeSlot = models.CharField(max_length=20, null=False, default="9:00 - 10:00")
 	notes = models.TextField(blank=True)
 
 
 class CleaningReservation(BaseModel):
 	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 	apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
-	status = models.CharField(max_length=20, choices=CleaningReservationStatusChoices.choices, default=CleaningReservationStatusChoices.TUTTI)
+	status = models.CharField(max_length=20, choices=ReservationStatusChoices.choices, default=ReservationStatusChoices.RICHIESTA)
 	cleaningType = models.CharField(max_length=50, null=False)
 	requestDate = models.DateField()
 	timeSlot = models.CharField(max_length=20, null=False, default="9:00 - 10:00")
@@ -106,11 +105,10 @@ class CleaningReservation(BaseModel):
 class FaultReport(BaseModel):
 	resident = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 	apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
-	status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
+	status = models.CharField(max_length=20, choices=ReservationStatusChoices.choices, default=ReservationStatusChoices.RICHIESTA)
 	reportDate = models.DateField()
-	space = models.ForeignKey(CommonArea, on_delete=models.CASCADE, null=True)
+	space = models.CharField(max_length=50, null=True)
 	faultType = models.CharField(max_length=50, choices=FaultTypeChoices.choices)
-	# faultPhoto = models.FileField(upload_to="./faultsImages/")
 	notes = models.TextField(blank=True)
 
 

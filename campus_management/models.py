@@ -2,10 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from backend_def.models import BaseModel
 from django.utils import timezone
-from .mixin import ChoiceFieldMixin;
 from .choices import (
-	RoleChoices, StatusChoices, ReservationStatusChoices,
-	FaultTypeChoices, GuestStatusChoices, RoomChoices,
+	RoleChoices, ReservationStatusChoices,
+	GuestStatusChoices, RoomChoices,
 	PackageStatusChoices, SpaceReservationStatusChoices,
 )
 

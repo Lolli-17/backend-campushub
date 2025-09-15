@@ -119,6 +119,18 @@ class FaultReportSerializer(serializers.ModelSerializer):
 		fields = '__all__'
 
 
+class GlobalNotificationsSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = GlobalNotifications
+		fields = '__all__'
+
+
+class UserNotificationsSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = UserNotifications
+		fields = '__all__'
+
+
 class CustomUserSerializer(serializers.ModelSerializer):
 	apartment = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all(), allow_null=True, required=False)
 	apartment_number = serializers.SerializerMethodField(read_only=True)
@@ -128,7 +140,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 		fields = (
 			'id', 'username', 'email', 'role', 'isFirstAccess', 
 			'first_name', 'last_name', 'apartment', 'apartment_number',
-			'lastElectricityReading', 'is_staff', 'phoneNumber', # Correzione: phoneNumber
+			'lastElectricityReading', 'is_staff', 'phoneNumber',
 			'is_active', 'date_joined', 'last_login', 'groups', 'user_permissions', 'password'
 		)
 		read_only_fields = ('date_joined', 'last_login',)

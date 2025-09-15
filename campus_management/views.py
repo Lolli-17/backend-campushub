@@ -23,13 +23,13 @@ class RegisterUser(generics.CreateAPIView):
 	permission_classes = [DjangoModelPermissions]
 
 
-class GetCurrentUser(generics.GenericAPIView):
+class GetCurrentUser(generics.APIView):
 	serializer_class = CustomUserSerializer
 	permission_classes = [DjangoModelPermissions]
 	
 	def get(self, request, *args, **kwargs):
-		user = self.serializer_class(request.user)
-		return Response(user.data)
+		serializer = CXAppUserSerializer(request.user)
+		return Response(serializer.data)
 
 
 class CampusViewSet(viewsets.ModelViewSet):
@@ -143,3 +143,12 @@ class GetCXAppCurrentUser(generics.GenericAPIView):
 	def get(self, request, *args, **kwargs):
 		user = self.serializer_class(request.user)
 		return Response(user.data)
+	
+
+
+class LogoutView(APIView):
+    permission_classes = [AllowAny]
+    
+    def post(self, request, format=None):
+        logout(request)
+        return Response({"detail": "Successfully logged out."})

@@ -5,7 +5,7 @@ from django.utils import timezone
 from .models import (
 	Campus, Apartment, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
-	GlobalNotifications, UserNotifications, ElectricityReading, CleaningType
+	GlobalNotifications, UserNotifications, ElectricityReading,
 )
 from .choices import CleaningTypeChoices, FaultTypeChoices, RoleChoices, RoomChoices
 

@@ -154,6 +154,7 @@ class CommonAreaReservationSerializer(serializers.ModelSerializer):
 
 class CleaningReservationSerializer(serializers.ModelSerializer):
 	resident_name = serializers.CharField(source='resident.get_full_name', read_only=True)
+	apartment_number = serializers.CharField(source='apartment.number', read_only=True)
 	
 	class Meta:
 		model = CleaningReservation

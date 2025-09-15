@@ -173,6 +173,9 @@ class GlobalNotificationsSerializer(serializers.ModelSerializer):
 	campus = serializers.PrimaryKeyRelatedField(queryset=Campus.objects.all(), allow_null=True, required=False)
 	campus_name = serializers.SerializerMethodField(read_only=True)
 
+	def get_campus_name(self, obj):
+		return obj.campus.name if obj.campus else None
+
 	class Meta:
 		model = GlobalNotifications
 		fields = '__all__'

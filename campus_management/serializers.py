@@ -170,6 +170,9 @@ class FaultReportSerializer(serializers.ModelSerializer):
 
 
 class GlobalNotificationsSerializer(serializers.ModelSerializer):
+	campus = serializers.PrimaryKeyRelatedField(queryset=Campus.objects.all(), allow_null=True, required=False)
+	campus_name = serializers.SerializerMethodField(read_only=True)
+
 	class Meta:
 		model = GlobalNotifications
 		fields = '__all__'

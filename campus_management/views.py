@@ -23,7 +23,7 @@ class RegisterUser(generics.CreateAPIView):
 	permission_classes = [DjangoModelPermissions]
 
 
-class GetCurrentUser(generics.APIView):
+class GetCurrentUser(APIView):
 	serializer_class = CustomUserSerializer
 	permission_classes = [DjangoModelPermissions]
 	

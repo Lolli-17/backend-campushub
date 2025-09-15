@@ -8,7 +8,7 @@ from django.contrib.auth.models import Group
 from .models import (
 	Campus, Apartment, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
-	GlobalNotifications, UserNotifications, ElectricityReading, CleaningType,
+	GlobalNotifications, UserNotifications, ElectricityReading,
 )
 from .serializers import (
 	CampusSerializer, ApartmentSerializer,

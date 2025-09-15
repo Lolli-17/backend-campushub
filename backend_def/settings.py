@@ -87,6 +87,7 @@ CORS_ALLOWED_ORIGINS = [
 	'http://localhost:3000',
 	'http://127.0.0.1:3000',
 	'https://campushub.pythonanywhere.com',
+	'https://seashell-starling-271336.hostingersite.com',
 ]
 
 CORS_ALLOW_CREDENTIALS = True

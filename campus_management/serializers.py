@@ -328,7 +328,7 @@ class CXAppUserSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = CustomUser
-		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'balance', 'lastElectricityReading',
+		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'lastElectricityReading',
 			 'role', 'isFirstAccess', 'phoneNumber', 'apartment', 'apartment_number']
 		extra_kwargs = {'apartment': {'write_only': True}}
 		read_only_fields = ['lastElectricityReading']

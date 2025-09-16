@@ -99,6 +99,7 @@ CORS_ALLOWED_ORIGINS = [
 	'https://seashell-starling-271336.hostingersite.com',
 	'https://silver-chamois-511591.hostingersite.com',
 	'https://blanchedalmond-raven-393527.hostingersite.com/',
+	'https://palegreen-crab-422204.hostingersite.com/login',
 ]
 
 CORS_ALLOW_CREDENTIALS = True

@@ -2,6 +2,8 @@ from campus_management.choices import GuestStatusChoices
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import (
 	Campus, Apartment, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
@@ -260,3 +262,32 @@ class CXAppUserSerializer(serializers.ModelSerializer):
 
 	def get_apartment_number(self, obj):
 		return obj.apartment.number if obj.apartment else None
+	
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+
+	def validate(self, attrs):
+		first_name = self.initial_data.get('first_name')
+		last_name = self.initial_data.get('last_name')
+		password = self.initial_data.get('password')
+
+		if not first_name or not last_name or not password:
+			raise serializers.ValidationError('First name, last name, and password are required.')
+
+		try:
+			user = CustomUser.objects.get(first_name=first_name, last_name=last_name)
+		except ObjectDoesNotExist:
+			raise serializers.ValidationError('No active account found with the given credentials.')
+
+		if not user.check_password(password):
+			raise serializers.ValidationError('No active account found with the given credentials.')
+		
+		self.user = user
+		
+		refresh = self.get_token(self.user)
+
+		data = {}
+		data['refresh'] = str(refresh)
+		data['access'] = str(refresh.access_token)
+
+		return data

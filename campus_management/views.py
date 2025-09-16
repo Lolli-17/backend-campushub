@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from django.utils import timezone
 from django.contrib.auth import logout
 from django.contrib.auth.models import Group
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import (
 	Campus, Apartment, CommonArea, Guest, Package,
 	CommonAreaReservation, CleaningReservation, FaultReport, CustomUser,
@@ -15,7 +16,7 @@ from .serializers import (
 	CommonAreaSerializer, GuestSerializer, PackageSerializer, ElectricityReadingSerializer,
 	CommonAreaReservationSerializer, CleaningReservationSerializer, 
 	FaultReportSerializer, CustomUserSerializer, CXAppUserSerializer,
-	GlobalNotificationsSerializer, UserNotificationsSerializer,
+	GlobalNotificationsSerializer, UserNotificationsSerializer, MyTokenObtainPairSerializer,
 )
 from .choices import RoleChoices
 
@@ -147,3 +148,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 		
 		user.groups.set(groups_data)
 		user.user_permissions.set(permissions_data)
+
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer

@@ -44,31 +44,31 @@ class LogoutView(APIView):
 class CampusViewSet(viewsets.ModelViewSet):
 	queryset = Campus.objects.all()
 	serializer_class = CampusSerializer
-	permission_classes = [DjangoModelPermissions]
+	permission_classes = [IsAuthenticated]
 
 
 class ApartmentViewSet(viewsets.ModelViewSet):
 	queryset = Apartment.objects.all()
 	serializer_class = ApartmentSerializer
-	permission_classes = [DjangoModelPermissions]
+	permission_classes = [IsAuthenticated]
 
 
 class ElectricityReadingViewSet(viewsets.ModelViewSet):
 	queryset = ElectricityReading.objects.all()
 	serializer_class = ElectricityReadingSerializer
-	permission_classes = [DjangoModelPermissions]
+	permission_classes = [IsAuthenticated]
 	
 	
 class CommonAreaViewSet(viewsets.ModelViewSet):
 	queryset = CommonArea.objects.all()
 	serializer_class = CommonAreaSerializer
-	permission_classes = [DjangoModelPermissions]
+	permission_classes = [IsAuthenticated]
 
 
 class GuestViewSet(viewsets.ModelViewSet):
 	queryset = Guest.objects.all()
 	serializer_class = GuestSerializer
-	permission_classes = [DjangoModelPermissions]
+	permission_classes = [IsAuthenticated]
 
 	def perform_update(self, serializer):
 		instance = self.get_object()
@@ -86,37 +86,37 @@ class GuestViewSet(viewsets.ModelViewSet):
 class PackageViewSet(viewsets.ModelViewSet):
 	queryset = Package.objects.all()
 	serializer_class = PackageSerializer
-	permission_classes = [DjangoModelPermissions]
+	permission_classes = [IsAuthenticated]
 
 
 class CommonAreaReservationViewSet(viewsets.ModelViewSet):
 	queryset = CommonAreaReservation.objects.all()
 	serializer_class = CommonAreaReservationSerializer
-	permission_classes = [DjangoModelPermissions]
+	permission_classes = [IsAuthenticated]
 
 
 class CleaningReservationViewSet(viewsets.ModelViewSet):
 	queryset = CleaningReservation.objects.all()
 	serializer_class = CleaningReservationSerializer
-	permission_classes = [DjangoModelPermissions]
+	permission_classes = [IsAuthenticated]
 
 
 class FaultReportViewSet(viewsets.ModelViewSet):
 	queryset = FaultReport.objects.all()
 	serializer_class = FaultReportSerializer
-	permission_classes = [DjangoModelPermissions]
+	permission_classes = [IsAuthenticated]
 
 
 class GlobalNotificationsViewSet(viewsets.ModelViewSet):
 	queryset = GlobalNotifications.objects.all()
 	serializer_class = GlobalNotificationsSerializer
-	permission_classes = [DjangoModelPermissions]
+	permission_classes = [IsAuthenticated]
 
 
 class UserNotificationsViewSet(viewsets.ModelViewSet):
 	queryset = UserNotifications.objects.all()
 	serializer_class = UserNotificationsSerializer
-	permission_classes = [DjangoModelPermissions]
+	permission_classes = [IsAuthenticated]
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):

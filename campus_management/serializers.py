@@ -73,7 +73,6 @@ class GuestSerializer(serializers.ModelSerializer):
 	time_in_house = serializers.SerializerMethodField()
 	
 	resident = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-	apartment = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all())
 
 	def create(self, validated_data):
 		resident = validated_data.get('resident')
@@ -250,7 +249,6 @@ class CXAppUserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = CustomUser
 		fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'isFirstAccess', 'phoneNumber', 'apartment', 'apartment_number']
-		extra_kwargs = {'apartment': {'write_only': True}}
 		read_only_fields = ['lastElectricityReading']
 
 	def get_apartment_number(self, obj):

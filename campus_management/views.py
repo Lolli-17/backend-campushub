@@ -57,6 +57,13 @@ class ElectricityReadingViewSet(viewsets.ModelViewSet):
 	queryset = ElectricityReading.objects.all()
 	serializer_class = ElectricityReadingSerializer
 	permission_classes = [IsAuthenticated]
+
+	def get_queryset(self):
+		user = self.request.user
+		if user.role in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
+			return Guest.objects.filter(resident=user)
+		else:
+			return Guest.objects.all()
 	
 	
 class CommonAreaViewSet(viewsets.ModelViewSet):
@@ -95,11 +102,25 @@ class PackageViewSet(viewsets.ModelViewSet):
 	serializer_class = PackageSerializer
 	permission_classes = [IsAuthenticated]
 
+	def get_queryset(self):
+		user = self.request.user
+		if user.role in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
+			return Guest.objects.filter(resident=user)
+		else:
+			return Guest.objects.all()
+
 
 class CommonAreaReservationViewSet(viewsets.ModelViewSet):
 	queryset = CommonAreaReservation.objects.all()
 	serializer_class = CommonAreaReservationSerializer
 	permission_classes = [IsAuthenticated]
+
+	def get_queryset(self):
+		user = self.request.user
+		if user.role in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
+			return Guest.objects.filter(resident=user)
+		else:
+			return Guest.objects.all()
 
 
 class CleaningReservationViewSet(viewsets.ModelViewSet):
@@ -107,11 +128,25 @@ class CleaningReservationViewSet(viewsets.ModelViewSet):
 	serializer_class = CleaningReservationSerializer
 	permission_classes = [IsAuthenticated]
 
+	def get_queryset(self):
+		user = self.request.user
+		if user.role in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
+			return Guest.objects.filter(resident=user)
+		else:
+			return Guest.objects.all()
+
 
 class FaultReportViewSet(viewsets.ModelViewSet):
 	queryset = FaultReport.objects.all()
 	serializer_class = FaultReportSerializer
 	permission_classes = [IsAuthenticated]
+
+	def get_queryset(self):
+		user = self.request.user
+		if user.role in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
+			return Guest.objects.filter(resident=user)
+		else:
+			return Guest.objects.all()
 
 
 class GlobalNotificationsViewSet(viewsets.ModelViewSet):
@@ -124,6 +159,13 @@ class UserNotificationsViewSet(viewsets.ModelViewSet):
 	queryset = UserNotifications.objects.all()
 	serializer_class = UserNotificationsSerializer
 	permission_classes = [IsAuthenticated]
+
+	def get_queryset(self):
+		user = self.request.user
+		if user.role in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
+			return Guest.objects.filter(resident=user)
+		else:
+			return Guest.objects.all()
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):

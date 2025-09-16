@@ -61,9 +61,9 @@ class ElectricityReadingViewSet(viewsets.ModelViewSet):
 	def get_queryset(self):
 		user = self.request.user
 		if user.role in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
-			return Guest.objects.filter(resident=user)
+			return ElectricityReading.objects.filter(resident=user)
 		else:
-			return Guest.objects.all()
+			return ElectricityReading.objects.all()
 	
 	
 class CommonAreaViewSet(viewsets.ModelViewSet):
@@ -105,9 +105,9 @@ class PackageViewSet(viewsets.ModelViewSet):
 	def get_queryset(self):
 		user = self.request.user
 		if user.role in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
-			return Guest.objects.filter(resident=user)
+			return Package.objects.filter(resident=user)
 		else:
-			return Guest.objects.all()
+			return Package.objects.all()
 
 
 class CommonAreaReservationViewSet(viewsets.ModelViewSet):
@@ -118,9 +118,9 @@ class CommonAreaReservationViewSet(viewsets.ModelViewSet):
 	def get_queryset(self):
 		user = self.request.user
 		if user.role in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
-			return Guest.objects.filter(resident=user)
+			return CommonAreaReservation.objects.filter(resident=user)
 		else:
-			return Guest.objects.all()
+			return CommonAreaReservation.objects.all()
 
 
 class CleaningReservationViewSet(viewsets.ModelViewSet):
@@ -131,9 +131,9 @@ class CleaningReservationViewSet(viewsets.ModelViewSet):
 	def get_queryset(self):
 		user = self.request.user
 		if user.role in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
-			return Guest.objects.filter(resident=user)
+			return CleaningReservation.objects.filter(resident=user)
 		else:
-			return Guest.objects.all()
+			return CleaningReservation.objects.all()
 
 
 class FaultReportViewSet(viewsets.ModelViewSet):
@@ -144,9 +144,9 @@ class FaultReportViewSet(viewsets.ModelViewSet):
 	def get_queryset(self):
 		user = self.request.user
 		if user.role in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
-			return Guest.objects.filter(resident=user)
+			return FaultReport.objects.filter(resident=user)
 		else:
-			return Guest.objects.all()
+			return FaultReport.objects.all()
 
 
 class GlobalNotificationsViewSet(viewsets.ModelViewSet):
@@ -163,9 +163,9 @@ class UserNotificationsViewSet(viewsets.ModelViewSet):
 	def get_queryset(self):
 		user = self.request.user
 		if user.role in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
-			return Guest.objects.filter(resident=user)
+			return UserNotifications.objects.filter(resident=user)
 		else:
-			return Guest.objects.all()
+			return UserNotifications.objects.all()
 
 
 class CustomUserViewSet(viewsets.ModelViewSet):

@@ -97,7 +97,7 @@ CORS_ALLOWED_ORIGINS = [
 	'http://127.0.0.1:3000',
 	'https://campushub.pythonanywhere.com',
 	'https://seashell-starling-271336.hostingersite.com',
-	'https://silver-chamois-511591.hostingersite.com/login',
+	'https://silver-chamois-511591.hostingersite.com',
 ]
 
 CORS_ALLOW_CREDENTIALS = True

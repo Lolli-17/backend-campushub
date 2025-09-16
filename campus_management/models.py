@@ -76,7 +76,7 @@ class Package(BaseModel):
 	status = models.CharField(max_length=20, choices=PackageStatusChoices.choices, default=PackageStatusChoices.IN_CONSEGNA)
 	sender = models.CharField(max_length=50)
 	arrivalDate = models.DateField()
-	storage = models.CharField(max_length=20)
+	storage = models.CharField(max_length=20, null=True, blank=True)
 	notes = models.TextField(blank=True)
 
 

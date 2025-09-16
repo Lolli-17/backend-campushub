@@ -70,6 +70,13 @@ class GuestViewSet(viewsets.ModelViewSet):
 	serializer_class = GuestSerializer
 	permission_classes = [IsAuthenticated]
 
+	def get_queryset(self):
+		user = self.request.user
+		if user.role in [RoleChoices.STUDENT, RoleChoices.HOTEL]:
+			return Guest.objects.filter(resident=user)
+		else:
+			return Guest.objects.all()
+
 	def perform_update(self, serializer):
 		instance = self.get_object()
 		if 'resident' in serializer.validated_data:

@@ -97,18 +97,25 @@ class GuestSerializer(serializers.ModelSerializer):
 		return None
 
 	def validate(self, data):
-		apartment = data.get('apartment')
-		checkInTime = data.get('checkInTime')
+		status = data.get('status', self.instance.status if self.instance else None)
+		checkInTime = data.get('checkInTime', self.instance.checkInTime if self.instance else None)
+		apartment = data.get('apartment', self.instance.apartment if self.instance else None)
 
-		if checkInTime:
-			if checkInTime <= timezone.now():
-				data['status'] = GuestStatusChoices.IN_HOUSE
-			else:
-				data['status'] = GuestStatusChoices.IN_ARRIVO
-		elif 'status' in data and data['status'] == GuestStatusChoices.IN_HOUSE and not checkInTime:
+		if status == GuestStatusChoices.OFF_HOUSE and 'checkOutTime' not in data:
+			data['checkOutTime'] = timezone.now()
+
+		if 'status' not in self.initial_data:
+			if checkInTime:
+				if checkInTime <= timezone.now():
+					data['status'] = GuestStatusChoices.IN_HOUSE
+				else:
+					data['status'] = GuestStatusChoices.IN_ARRIVO
+		
+		if status == GuestStatusChoices.IN_HOUSE and not checkInTime:
 			data['checkInTime'] = timezone.now()
 
-		if apartment and data.get('status') == GuestStatusChoices.IN_HOUSE:
+
+		if apartment and status == GuestStatusChoices.IN_HOUSE:
 			if Guest.objects.filter(apartment=apartment, status=GuestStatusChoices.IN_HOUSE).exclude(pk=self.instance.pk if self.instance else None).exists():
 				raise serializers.ValidationError("Questa stanza è già occupata da un ospite in arrivo o in casa.")
 		

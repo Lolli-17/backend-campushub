@@ -98,6 +98,7 @@ CORS_ALLOWED_ORIGINS = [
 	'https://campushub.pythonanywhere.com',
 	'https://seashell-starling-271336.hostingersite.com',
 	'https://silver-chamois-511591.hostingersite.com',
+	'https://blanchedalmond-raven-393527.hostingersite.com/',
 ]
 
 CORS_ALLOW_CREDENTIALS = True

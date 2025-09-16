@@ -60,3 +60,8 @@ class RoomChoices(TextChoices):
 	CAMERA = "Camera", "Camera"
 	CUCINA = "Cucina", "Cucina"
 	BAGNO = "Bagno", "Bagno"
+
+
+class NotificationStatusChoices(TextChoices):
+	PROGRAMMATA = "Programmata", "Programmata"
+	INVIATA = "Inviata", "Inviata"

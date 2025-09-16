@@ -4,7 +4,7 @@ from backend_def.models import BaseModel
 from django.utils import timezone
 from .choices import (
 	RoleChoices, ReservationStatusChoices,
-	GuestStatusChoices, RoomChoices,
+	GuestStatusChoices, RoomChoices, NotificationStatusChoices,
 	PackageStatusChoices, SpaceReservationStatusChoices,
 )
 
@@ -116,7 +116,7 @@ class GlobalNotifications(BaseModel):
 	title = models.CharField(max_length=100, null=False)
 	body = models.TextField(null=True)
 	sendingTime = models.DateTimeField(default=timezone.now(), null=False)
-	is_active = models.BooleanField(default=True)
+	status = models.CharField(choices=NotificationStatusChoices, default=NotificationStatusChoices.PROGRAMMATA)
 
 	def __str__(self):
 		return self.title
@@ -127,6 +127,7 @@ class UserNotifications(BaseModel):
 	title = models.CharField(max_length=100, null=False)
 	body = models.TextField(null=True)
 	sendingTime = models.DateTimeField(default=timezone.now(), null=False)
+	status = models.CharField(choices=NotificationStatusChoices, default=NotificationStatusChoices.PROGRAMMATA)
 	is_read = models.BooleanField(default=False)
 	
 	def __str__(self):

@@ -29,6 +29,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['campushub.pythonanywhere.com']
 
+'''
+Tentativo fallito di cambiare dati in tempo reale perchè non voglio pagare
+CELERY_BROKER_URL = "redis://:BzAPuxC65ReTKaSLeFOVPTXXg6kSXAa1@redis-11505.crce202.eu-west-3-1.ec2.redns.redis-cloud.com:11505/0"
+CELERY_RESULT_BACKEND = "redis://:BzAPuxC65ReTKaSLeFOVPTXXg6kSXAa1@redis-11505.crce202.eu-west-3-1.ec2.redns.redis-cloud.com:11505/0"
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Rome'
+'''
 
 # Application definition
 

@@ -196,8 +196,9 @@ class UserNotificationsSerializer(serializers.ModelSerializer):
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
-	apartment = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all(), allow_null=True, required=False)
-	apartment_number = serializers.SerializerMethodField(read_only=True)
+	apartment = ApartmentSerializer(many=False)
+	# apartment = serializers.PrimaryKeyRelatedField(queryset=Apartment.objects.all(), allow_null=True, required=False)
+	# apartment_number = serializers.SerializerMethodField(read_only=True)
 
 	class Meta:
 		model = CustomUser

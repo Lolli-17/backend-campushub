@@ -204,7 +204,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 		model = CustomUser
 		fields = (
 			'id', 'username', 'email', 'role', 'isFirstAccess', 
-			'first_name', 'last_name', 'apartment', 'apartment_number',
+			'first_name', 'last_name', 'apartment',
 			'lastElectricityReading', 'is_staff', 'phoneNumber',
 			'is_active', 'date_joined', 'last_login', 'groups', 'user_permissions', 'password'
 		)
